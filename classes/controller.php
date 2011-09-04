@@ -22,7 +22,7 @@ class Controller extends \Controller {
 		\Config::load("oauth", true);
 	}
 
-	public function action_login($provider)
+	public function action_session($provider)
 	{
 		// Create an consumer from the config
 		$this->consumer = \OAuth\OAuth_Consumer::factory(
@@ -33,7 +33,7 @@ class Controller extends \Controller {
 		$this->provider = \OAuth\OAuth_Provider::factory($provider);
 		
 		// Add the callback URL to the consumer
-		$this->consumer->callback(\Uri::create($this->request->controller.'/authorise/'.$provider));
+		$this->consumer->callback(\Uri::create($this->request->controller.'/callback/'.$provider));
 
 		// Get a request token for the consumer
 		$token = $this->provider->request_token($this->consumer);
@@ -45,7 +45,7 @@ class Controller extends \Controller {
 		\Response::redirect($this->provider->authorize_url($token));
 	}
 
-	public function action_authorise($provider)
+	public function action_callback($provider)
 	{
 		$config = \Config::get("oauth.{$provider}");
 
@@ -79,30 +79,47 @@ class Controller extends \Controller {
 		// Exchange the request token for an access token
 		$token = $this->provider->access_token($this->consumer, $this->token);
 		
-		// Store the token
-		\Cookie::set('ninjauth', base64_encode(serialize($token)));
-		
+		// The user exists, so send him on his merry way as a user
+		if ($user = Model_Authentication::find_by_token_and_secret($token->token, $token->secret))
+		{
+			// first of all, let's get a auth object
+			$auth = Auth::instance();
 
+			// Force a login with this username
+			if ($auth->force_login($user->username))
+			{
+			    // credentials ok, go right in
+			    Response::redirect(\Config::get('ninjauth.urls.registered'));
+			}
+		}
+		
+		// They aren't a user, so redirect to registration page
+		else
+		{
+			$user_hash = $this->provider->get_user_info($this->consumer, $token);
+			
+			\Session::set('ninjauth', $user_hash);
+		}
+		
 		\Response::redirect(\Config::get('ninjauth.urls.registration'));
 	}
 	
-	public function action_index()
-	{
-		$this->provider = \OAuth\OAuth_Provider::factory('twitter');
-		
-		$token = unserialize(base64_decode(\Cookie::get('ninjauth')));
-		
-		if ( ! Model_Authentication::count_by_token_and_secret($token->token, $token->secret))
-		{
-			// $data = $this->provider->get_user_data($token)->execute();
 
-			
-			\Debug::dump($token);
-		}
+	public function action_register()
+	{
+		$user_hash = \Session::get('ninjauth');
 		
-		else
-		{
-			echo "yes";
-		}
+		$user = new \stdClass();
+		$user->username = \Input::post('username') ?: \Arr::get($user_hash, 'nickname');
+		$user->full_name = \Input::post('full_name') ?: \Arr::get($user_hash, 'name');
+		$user->email = \Input::post('email') ?: \Arr::get($user_hash, 'email');
+		
+		$this->response->body = \View::forge('register', array(
+			'user' => $user
+		));
 	}
+	
+	
+	
+	
 }

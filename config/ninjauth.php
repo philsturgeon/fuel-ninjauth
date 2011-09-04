@@ -5,11 +5,11 @@
 return array(
 	
 	'urls' => array(
-		'registration' => 'users/register',
-		'login' => 'users/login',
+		'registration' => 'auth/register',
+		'login' => 'auth/login',
 		
-		'registered' => 'users/account',
-		'logged_in' => 'users/account',
+		'registered' => 'auth/account',
+		'logged_in' => 'auth/account',
 	)
 	
 );
