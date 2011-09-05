@@ -32,8 +32,12 @@ class Controller extends \Controller {
 		// Load the provider
 		$this->provider = \OAuth\OAuth_Provider::factory($provider);
 		
+		// Create the URL to return the user to
+		$callback = \Uri::create($this->request->controller.'/callback/'.$provider);
+		
+		
 		// Add the callback URL to the consumer
-		$this->consumer->callback(\Uri::create($this->request->controller.'/callback/'.$provider));
+		$this->consumer->callback($callback);	
 
 		// Get a request token for the consumer
 		$token = $this->provider->request_token($this->consumer);
@@ -42,7 +46,9 @@ class Controller extends \Controller {
 		\Cookie::set('oauth_token', base64_encode(serialize($token)));
 
 		// Redirect to the twitter login page
-		\Response::redirect($this->provider->authorize_url($token));
+		\Response::redirect($this->provider->authorize_url($token, array(
+			'oauth_callback' => $callback,
+		)));
 	}
 
 	public function action_callback($provider)
