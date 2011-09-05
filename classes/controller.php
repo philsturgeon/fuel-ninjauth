@@ -89,7 +89,7 @@ class Controller extends \Controller {
 			if ($auth->force_login($user->username))
 			{
 			    // credentials ok, go right in
-			    Response::redirect(\Config::get('ninjauth.urls.registered'));
+			    Response::redirect(\Config::get('ninjauth.urls.logged_in'));
 			}
 		}
 		
@@ -109,17 +109,36 @@ class Controller extends \Controller {
 	{
 		$user_hash = \Session::get('ninjauth');
 		
-		$user = new \stdClass();
-		$user->username = \Input::post('username') ?: \Arr::get($user_hash, 'nickname');
-		$user->full_name = \Input::post('full_name') ?: \Arr::get($user_hash, 'name');
-		$user->email = \Input::post('email') ?: \Arr::get($user_hash, 'email');
+		$full_name = \Input::post('full_name') ?: \Arr::get($user_hash, 'name');
+		$username = \Input::post('username') ?: \Arr::get($user_hash, 'nickname');
+		$email = \Input::post('email') ?: \Arr::get($user_hash, 'email');
+		$password = \Input::post('password');
+		
+		if ($username and $full_name and $email and $password)
+		{
+			$user_id = \Auth::create_user($username, $password, $email, 1, array(
+				'full_name' => $full_name,
+			));
+			
+			if ($user_id)
+			{
+				Model_Authentication::forge(array(
+					'user_id' => $user_id,
+					'provider' => $user_hash['credentials']['provider'],
+					'uid' => $user_hash['credentials']['uid'],
+					'token' => $user_hash['credentials']['token'],
+					'secret' => $user_hash['credentials']['secret'],
+					'created_at' => time(),
+				))->save();
+			}
+			
+			\Response::redirect(\Config::get('ninjauth.urls.registered'));
+		}
 		
 		$this->response->body = \View::forge('register', array(
-			'user' => $user
+			'user' => (object) compact('username', 'full_name', 'email', 'password')
 		));
 	}
-	
-	
 	
 	
 }

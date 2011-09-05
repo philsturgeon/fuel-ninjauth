@@ -1,4 +1,4 @@
-<?php echo Form::open(array('id' => 'register')); ?>
+<?php echo Form::open(\Config::get('ninjauth.urls.registration'), array('id' => 'register')); ?>
 	<p>
 		<label for="username">Username</label>
 		<?php echo Form::input('username', $user->username) ?>
