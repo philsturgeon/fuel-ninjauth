@@ -89,13 +89,13 @@ class Controller extends \Controller {
 		if ($user = Model_Authentication::find_by_token_and_secret($token->token, $token->secret))
 		{
 			// first of all, let's get a auth object
-			$auth = Auth::instance();
+			$auth = \Auth::instance();
 
 			// Force a login with this username
 			if ($auth->force_login($user->username))
 			{
 			    // credentials ok, go right in
-			    Response::redirect(\Config::get('ninjauth.urls.logged_in'));
+			    \Response::redirect(\Config::get('ninjauth.urls.logged_in'));
 			}
 		}
 		
