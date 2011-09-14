@@ -63,7 +63,7 @@ class Strategy_OAuth extends Strategy {
 		$this->token->verifier($verifier);
 
 		// Exchange the request token for an access token
-		return $token = $this->provider->access_token($this->consumer, $this->token);
+		return $this->provider->access_token($this->consumer, $this->token);
 	}
 	
 }

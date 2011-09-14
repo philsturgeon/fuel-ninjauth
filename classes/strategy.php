@@ -4,6 +4,8 @@ namespace NinjAuth;
 
 abstract class Strategy {
 	
+	public $name;
+	
 	protected static $providers = array(
 		'facebook' => 'OAuth2',
 		'twitter' => 'OAuth',
@@ -19,6 +21,12 @@ abstract class Strategy {
 		$this->provider = $provider;
 		
 		$this->config = \Config::get("ninjauth.providers.{$provider}");
+		
+		if ( ! $this->name)
+		{
+			// Attempt to guess the name from the class name
+			$this->name = strtolower(str_replace('NinjAuth\Strategy_', '', get_class($this)));
+		}
 	}
 	
 	public static function factory($provider)

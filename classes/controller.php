@@ -24,10 +24,10 @@ class Controller extends \Controller {
 	{
 		$strategy = Strategy::factory($provider);
 		
-		$token = $strategy->callback();
+		$response = $strategy->callback();
 		
 		// The user exists, so send him on his merry way as a user
-		if ($authentication = Model_Authentication::find_by_token_and_secret($token->token, $token->secret))
+		if ($authentication = Model_Authentication::find_by_token_and_secret($response->token, $response->secret))
 		{	
 			// first of all, let's get a auth object
 			$auth = \Auth::instance();
@@ -43,7 +43,19 @@ class Controller extends \Controller {
 		// They aren't a user, so redirect to registration page
 		else
 		{
-			$user_hash = $strategy->provider->get_user_info($strategy->consumer, $token);
+			switch ($strategy->name)
+			{
+			 	case 'oauth':
+					$user_hash = $strategy->provider->get_user_info($strategy->consumer, $token);
+				break;
+				
+				case 'oauth2':
+					$user_hash = $strategy->provider->get_user_info($response->token);
+				break;
+				
+				default:
+					exit('Ummm....');
+			}
 			
 			\Session::set('ninjauth', $user_hash);
 		}
