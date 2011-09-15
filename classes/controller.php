@@ -46,7 +46,7 @@ class Controller extends \Controller {
 			switch ($strategy->name)
 			{
 			 	case 'oauth':
-					$user_hash = $strategy->provider->get_user_info($strategy->consumer, $token);
+					$user_hash = $strategy->provider->get_user_info($strategy->consumer, $response);
 				break;
 				
 				case 'oauth2':
