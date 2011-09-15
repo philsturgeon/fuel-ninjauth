@@ -11,7 +11,15 @@ return array(
 		'registered' => 'auth/account',
 		'logged_in' => 'auth/account',
 	),
-
+	/**
+	* Linking
+	*
+	* This allows for linking of existing accounts to providers. 
+	* If set to true, calling the login url whilst a user is logged in will cause the account to be linked 
+	* with the logged in user rather than trying to make a new account.
+	*/
+	'link' => false,
+	
 	/**
 	 * Providers
 	 * 
