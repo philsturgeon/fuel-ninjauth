@@ -15,7 +15,7 @@ class Strategy_OAuth extends Strategy {
 		$provider = \OAuth\Provider::factory($this->provider);
 		
 		// Create the URL to return the user to
-		$callback = \Uri::create(\Request::active()->controller.'/callback/'.$this->provider);
+		$callback = \Uri::create(\Config::get('ninjauth.urls.callback', \Request::active()->controller.'/callback/').$this->provider);
 		
 		// Add the callback URL to the consumer
 		$consumer->callback($callback);	
