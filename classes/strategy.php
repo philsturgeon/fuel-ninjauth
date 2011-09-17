@@ -12,6 +12,7 @@ abstract class Strategy {
 		'dropbox' => 'OAuth',
 		'flickr' => 'OAuth',
 		'google' => 'OAuth',
+		'github' => 'OAuth2',
 		'linkedin' => 'OAuth',
 		'youtube' => 'OAuth',
 	);
