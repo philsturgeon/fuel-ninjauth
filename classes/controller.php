@@ -26,8 +26,23 @@ class Controller extends \Controller {
 		
 		$response = $strategy->callback();
 		
+		// OAuth2 doesn't respond with a secret, so must only use find_by_token when looking up user.
+		switch($strategy->name)
+		{
+			case 'oauth':
+				$authentication = Model_Authentication::find_by_token_and_secret($response->token, $response->secret);
+			break;
+			
+			case 'oauth2':
+				$authentication = Model_Authentication::find_by_token($response->token);
+			break;
+			
+			default:
+				exit('Ummm....');
+		}
+		
 		// The user exists, so send him on his merry way as a user
-		if ($authentication = Model_Authentication::find_by_token_and_secret($response->token, $response->secret))
+		if ($authentication)
 		{	
 			// first of all, let's get a auth object
 			$auth = \Auth::instance();
