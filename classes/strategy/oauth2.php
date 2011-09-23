@@ -12,7 +12,7 @@ class Strategy_OAuth2 extends Strategy {
 		$provider = \OAuth2\Provider::factory($this->provider, $this->config);
 		
 		$provider->authorize(array(
-			'redirect_uri' => \Uri::create(\Config::get('ninjauth.urls.callback', \Request::active()->controller.'/callback').'/'.$this->provider)
+			'redirect_uri' => \Uri::create(\Config::get('ninjauth.urls.callback', \Request::active()->route->segments[0].'/callback').'/'.$this->provider)
 		));
 	}
 	
