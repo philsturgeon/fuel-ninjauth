@@ -12,6 +12,13 @@ return array(
 		'registered' => 'auth/account',
 		'logged_in' => 'auth/account',
 	),
+	
+	/**
+	 * link_multiple_providers
+	 * 
+	 * Can multiple providers be attached to one user account
+	 */
+	'link_multiple_providers' => true,
 
 	/**
 	 * Providers

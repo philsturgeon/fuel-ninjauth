@@ -24,45 +24,8 @@ class Controller extends \Controller {
 	{
 		$strategy = Strategy::factory($provider);
 		
-		$response = $strategy->callback();
-		
-		// The user exists, so send him on his merry way as a user
-		if ($authentication = Model_Authentication::find_by_token_and_secret($response->token, $response->secret))
-		{	
-			// first of all, let's get a auth object
-			$auth = \Auth::instance();
-
-			// Force a login with this username
-			if ($auth->force_login($authentication->user_id))
-			{
-			    // credentials ok, go right in
-			    \Response::redirect(\Config::get('ninjauth.urls.logged_in'));
-			}
-		}
-		
-		// They aren't a user, so redirect to registration page
-		else
-		{
-			switch ($strategy->name)
-			{
-			 	case 'oauth':
-					$user_hash = $strategy->provider->get_user_info($strategy->consumer, $response);
-				break;
-				
-				case 'oauth2':
-					$user_hash = $strategy->provider->get_user_info($response->token);
-				break;
-				
-				default:
-					exit('Ummm....');
-			}
-			
-			\Session::set('ninjauth', $user_hash);
-		}
-		
-		\Response::redirect(\Config::get('ninjauth.urls.registration'));
+		Strategy::login_or_register($strategy);
 	}
-	
 
 	public function action_register()
 	{
