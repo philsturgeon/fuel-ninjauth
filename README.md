@@ -1,4 +1,4 @@
-# NinjAuth
+# NinjAuth v0.2.0
 
 Use the Auth, oAuth and oAuth2 packages to authenticate users with an array of third-party services in a totally integrated and abstracted fashion.
 

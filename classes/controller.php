@@ -38,9 +38,17 @@ class Controller extends \Controller {
 		
 		if ($username and $full_name and $email and $password)
 		{
-			$user_id = \Auth::create_user($username, $password, $email, 1, array(
-				'full_name' => $full_name,
-			));
+			try
+			{
+				$user_id = \Auth::create_user($username, $password, $email, \Config::get('ninjauth.default_group'), array(
+					'full_name' => $full_name,
+				));
+			}
+			catch (SimpleUserUpdateException $e)
+			{
+				\Session::set_flash('ninjauth.error', $e->getMessage());
+				goto display;
+			}
 			
 			if ($user_id)
 			{
@@ -56,6 +64,8 @@ class Controller extends \Controller {
 			
 			\Response::redirect(\Config::get('ninjauth.urls.registered'));
 		}
+		
+		display:
 		
 		$this->response->body = \View::forge('register', array(
 			'user' => (object) compact('username', 'full_name', 'email', 'password')

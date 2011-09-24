@@ -12,13 +12,6 @@ return array(
 		'registered' => 'auth/account',
 		'logged_in' => 'auth/account',
 	),
-	
-	/**
-	 * link_multiple_providers
-	 * 
-	 * Can multiple providers be attached to one user account
-	 */
-	'link_multiple_providers' => true,
 
 	/**
 	 * Providers
@@ -60,4 +53,18 @@ return array(
 		),
 	
 	),
+
+	/**
+	 * link_multiple_providers
+	 * 
+	 * Can multiple providers be attached to one user account
+	 */
+	'link_multiple_providers' => true,
+
+	/**
+	 * default_group
+	 * 
+	 * How should users be signed up
+	 */
+	'default_group' => 1,
 );
