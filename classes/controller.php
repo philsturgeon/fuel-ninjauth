@@ -32,6 +32,17 @@ class Controller extends \Controller {
 			// first of all, let's get a auth object
 			$auth = \Auth::instance();
 
+			//we check if set up to do an account link
+			if(\Config::get('ninjauth.link',false) and \Auth::check())
+			{
+				$uid = $auth->get_user_id();
+				if($authentication->user_id != $uid[1])
+				{
+					//oh noes! the user tried to attach an account is already linked to another user
+					throw new \Exception('That account is already linked to another user');
+				}
+			}
+			
 			// Force a login with this username
 			if ($auth->force_login($authentication->user_id))
 			{
@@ -40,7 +51,7 @@ class Controller extends \Controller {
 			}
 		}
 		
-		// They aren't a user, so redirect to registration page
+		// The account isn't registered
 		else
 		{
 			switch ($strategy->name)
@@ -57,6 +68,27 @@ class Controller extends \Controller {
 					exit('Ummm....');
 			}
 			
+			if(\Config::get('ninjauth.link',false))
+			{				
+				if(\Auth::check())
+				{
+					$uid = \Auth::instance()->get_user_id();
+					
+					//attach this account to the logged in user
+					Model_Authentication::forge(array(
+						'user_id' => $uid[1],
+						'provider' => $user_hash['credentials']['provider'],
+						'uid' => $user_hash['credentials']['uid'],
+						'token' => $user_hash['credentials']['token'],
+						'secret' => $user_hash['credentials']['secret'],
+						'created_at' => time(),
+						'updated_at' => time()
+					))->save();
+				
+					//attachment went ok so we'll redirect
+					\Response::redirect(\Config::get('ninjauth.urls.logged_in'));
+				}
+			}
 			\Session::set('ninjauth', $user_hash);
 		}
 		
