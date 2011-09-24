@@ -1,4 +1,9 @@
 <?php echo Form::open(\Config::get('ninjauth.urls.registration'), array('id' => 'register')); ?>
+
+	<?php if (Session::get_flash('ninjauth.error')): ?>
+		<span class="error"><?php echo Session::get_flash('ninjauth.error'); ?></span>
+	<?php endif; ?>
+
 	<p>
 		<label for="username">Username</label>
 		<?php echo Form::input('username', $user->username) ?>
