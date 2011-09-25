@@ -24,7 +24,7 @@ return array(
 		'facebook' => array(
 			'id' => '',
 			'secret' => '',
-			'scope' => '',
+			'scope' => 'email,offline_access',
 		),
 		
 		'twitter' => array(
