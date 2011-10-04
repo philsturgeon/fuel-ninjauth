@@ -36,7 +36,7 @@ abstract class Strategy {
 		
 		if ( ! $strategy)
 		{
-			throw new Exception(sprint('Provider "%s" has no strategy.', $provider));
+			throw new Exception(sprintf('Provider "%s" has no strategy.', $provider));
 		}
 		
 		$class = "NinjAuth\\Strategy_{$strategy}";
