@@ -14,6 +14,7 @@ abstract class Strategy {
 		'google' => 'OAuth',
 		'github' => 'OAuth2',
 		'linkedin' => 'OAuth',
+		'unmagnify' => 'OAuth2',
 		'youtube' => 'OAuth',
 	);
 	
