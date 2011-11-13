@@ -35,7 +35,7 @@ class Strategy_OpenId extends Strategy
 		$identity = \Input::post(\Config::get('ninjauth.providers.openid.identifier_form_name'));
 		if(empty($identity))
 		{
-			exit('Must provide an OpenId identity.');
+			throw new Exception('No identity provided');
 		}
 
 		$this->openid->identity = $identity;
@@ -49,7 +49,7 @@ class Strategy_OpenId extends Strategy
 		}
 		catch(Exception $e)
 		{
-			exit('Something went wrong: '.$e);
+			throw new Exception('Unable to find OpenId provider URL', 404, $e);
 		}
 		exit(); // must exit here since we do a redirection.
 	}
@@ -63,11 +63,11 @@ class Strategy_OpenId extends Strategy
 	{
 		if($this->openid->mode == 'cancel')
 		{
-			exit('user canceled');
+			throw new CancelException('User canceled the process');
 		}
 		if (! $this->openid->validate())
 		{
-			exit('Error');
+			throw new Exception('Invalid OpenId response');
 		}
 
 		return (object) array(
