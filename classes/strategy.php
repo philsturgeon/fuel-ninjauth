@@ -17,6 +17,7 @@ abstract class Strategy {
 		'linkedin' => 'OAuth',
 		'unmagnify' => 'OAuth2',
 		'youtube' => 'OAuth',
+		'openid' => 'OpenId',
 	);
 	
 	public function __construct($provider)
@@ -67,6 +68,10 @@ abstract class Strategy {
 					case 'oauth2':
 						$user_hash = $strategy->provider->get_user_info($response->token);
 					break;
+
+					case 'openid':
+						$user_hash = $strategy->get_user_info($response);
+					break;
 				}
 				
 				// Attach this account to the logged in user
@@ -113,7 +118,11 @@ abstract class Strategy {
 				case 'oauth2':
 					$user_hash = $strategy->provider->get_user_info($response->token);
 				break;
-				
+
+				case 'openid':
+					$user_hash = $strategy->get_user_info($response);
+				break;
+
 				default:
 					exit('Ummm....');
 			}

@@ -51,7 +51,13 @@ return array(
 			'key' => '',
 			'scope' => 'http://gdata.youtube.com',
 		),
-	
+
+		'openid' => array (
+			'identifier_form_name' => 'openid_identifier',
+			'ax_required' => array('contact/email', 'namePerson/first', 'namePerson/last'),
+			'ax_optional' => array('namePerson/friendly', 'birthDate', 'person/gender', 'contact/country/home'),
+		),
+
 	),
 
 	/**

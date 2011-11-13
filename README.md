@@ -10,10 +10,10 @@ NinjAuth comes from the company behind the project: [HappyNinjas](http://happyni
 
 - OAuth
 - OAuth2
+- OpenID (by [krtek4](https://github.com/krtek4)) 
 
 ## TODO
 
-- OpenID - pull request somebody?
 - XAuth - anyone?
 - More flexible registration (view files as properties, or config options)
 
