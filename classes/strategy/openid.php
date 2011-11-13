@@ -32,8 +32,8 @@ class Strategy_OpenId extends Strategy
 	 */
 	public function authenticate()
 	{
-		$identity = \Input::post(\Config::get('ninjauth.providers.openid.'));
-		if(empty($url))
+		$identity = \Input::post(\Config::get('ninjauth.providers.openid.identifier_form_name'));
+		if(empty($identity))
 		{
 			exit('Must provide an OpenId identity.');
 		}
