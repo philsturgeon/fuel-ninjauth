@@ -11,7 +11,6 @@ abstract class Strategy {
 		'twitter' => 'OAuth',
 		'dropbox' => 'OAuth',
 		'flickr' => 'OAuth',
-		'gmail' => 'OAuth',
 		'google' => 'OAuth2',
 		'github' => 'OAuth2',
 		'linkedin' => 'OAuth',
@@ -34,7 +33,8 @@ abstract class Strategy {
 	
 	public static function factory($provider)
 	{
-		$strategy = \Arr::get(static::$providers, $provider);
+		// If a strategy has been specified use it, otherwise look it up
+		$strategy = \Config::get("ninjauth.providers.{$provider}.strategy") ?: \Arr::get(static::$providers, $provider);
 		
 		if ( ! $strategy)
 		{
