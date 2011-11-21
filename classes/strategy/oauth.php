@@ -9,13 +9,13 @@ class Strategy_OAuth extends Strategy {
 	public function authenticate()
 	{
 		// Create an consumer from the config
-		$consumer = \OAuth\Consumer::factory($this->config);
+		$consumer = \OAuth\Consumer::forge($this->config);
 		
 		// Load the provider
-		$provider = \OAuth\Provider::factory($this->provider);
+		$provider = \OAuth\Provider::forge($this->provider);
 		
 		// Create the URL to return the user to
-		$callback = \Uri::create(\Config::get('ninjauth.urls.callback', \Request::active()->route->segments[0].'/callback').'/'.$this->provider);
+		$callback = \Arr::get($this->config, 'callback') ?: \Uri::create(\Config::get('ninjauth.urls.callback', \Request::active()->route->segments[0].'/callback/'.$this->provider));
 		
 		// Add the callback URL to the consumer
 		$consumer->callback($callback);	
@@ -36,10 +36,10 @@ class Strategy_OAuth extends Strategy {
 	public function callback()
 	{
 		// Create an consumer from the config
-		$this->consumer = \OAuth\Consumer::factory($this->config);
+		$this->consumer = \OAuth\Consumer::forge($this->config);
 
 		// Load the provider
-		$this->provider = \OAuth\Provider::factory($this->provider);
+		$this->provider = \OAuth\Provider::forge($this->provider);
 		
 		if ($token = \Cookie::get('oauth_token'))
 		{

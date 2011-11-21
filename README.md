@@ -28,8 +28,31 @@ NinjAuth comes from the company behind the project: [HappyNinjas](http://happyni
 
 ## Usage Example
 
+### Controller
+
 http://example.com/auth/session/facebook
 
 ```php
 class Controller_Auth extends \NinjAuth\Controller {}
 ```
+
+### Configuration
+
+	'somewhere' => array(
+		'id' => '9cd980e0d883ERG42974b6cd78175135',
+		'secret' => '19d874DW43534SDFfce025d9bba4423452',
+		
+		// Specify a specific callback
+		'callback' => 'http://example.com/foo/bar',
+	),
+
+	'google' => array(
+		'key' => 'yourkey',
+		'secret' => 'yoursecret',
+		
+		// Provide a string or array for the API scope
+		'scope' => array('https://www.google.com/analytics/feeds', 'https://www.google.com/m8/feeds'),
+		
+		// Google supports OAuth and OAuth2. Pick a specific
+		'strategy' => 'OAuth',
+	),

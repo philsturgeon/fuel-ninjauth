@@ -4,7 +4,6 @@
  *
  * @package    Fuel
  * @version    1.0
- * @OAuthor     Fuel Development Team
  * @license    MIT License
  * @copyright  2010 - 2011 Fuel Development Team
  * @link       http://fuelphp.com

@@ -33,7 +33,7 @@ class Strategy_OpenId extends Strategy
 	public function authenticate()
 	{
 		$identity = \Input::post(\Config::get('ninjauth.providers.openid.identifier_form_name'));
-		if(empty($identity))
+		if (empty($identity))
 		{
 			throw new Exception('No identity provided');
 		}
@@ -61,7 +61,7 @@ class Strategy_OpenId extends Strategy
 	 */
 	public function callback()
 	{
-		if($this->openid->mode == 'cancel')
+		if ($this->openid->mode == 'cancel')
 		{
 			throw new CancelException('User canceled the process');
 		}
@@ -71,8 +71,7 @@ class Strategy_OpenId extends Strategy
 		}
 
 		return (object) array(
-			'token' => $this->openid->identity,
-			'secret' => '', // otherwise the database complains about a null value
+			'access_token' => $this->openid->identity,
 		);
 	}
 
@@ -94,14 +93,14 @@ class Strategy_OpenId extends Strategy
 	private function get_data($map, $data)
 	{
 		$r = '';
-		if(is_array($map))
+		if (is_array($map))
 		{
-			foreach($map as $m)
+			foreach ($map as $m)
 			{
 				$r .= $this->get_data($m, $data);
 			}
 		}
-		else if(array_key_exists($map, $data))
+		else if (array_key_exists($map, $data))
 		{
 			$r = $data[$map];
 		}
@@ -114,17 +113,11 @@ class Strategy_OpenId extends Strategy
 	 */
 	public function get_user_info($response)
 	{
-		$ret = array(
-			'credentials' => array(
-				'uid' => $this->openid->identity,
-				'provider' => $this->name,
-				'token' => $response->token,
-				'secret' => $response->secret,
-			),
-		);
+		$ret['uid'] = $this->openid->identity;
 
 		$data = $this->openid->getAttributes();
-		foreach(static::$mapping as $name => $map)
+		
+		foreach (static::$mapping as $name => $map)
 		{
 			$ret[$name] = $this->get_data($map, $data);
 		}

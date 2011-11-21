@@ -9,7 +9,7 @@ class Strategy_OAuth2 extends Strategy {
 	public function authenticate()
 	{
 		// Load the provider
-		$provider = \OAuth2\Provider::factory($this->provider, $this->config);
+		$provider = \OAuth2\Provider::forge($this->provider, $this->config);
 		
 		// Grab a callback from the config
 		if ($provider->callback === null)
@@ -25,22 +25,9 @@ class Strategy_OAuth2 extends Strategy {
 	public function callback()
 	{
 		// Load the provider
-		$this->provider = \OAuth2\Provider::factory($this->provider, $this->config);
+		$this->provider = \OAuth2\Provider::forge($this->provider, $this->config);
 		
-		try
-		{
-			$params = $this->provider->access(\Input::get('code'));
-			
-			return (object) array(
-				'token' => $params['access_token'],
-				'secret' => null,
-			);
-		}
-	
-		catch (Exception $e)
-		{
-			exit('That didnt work: '.$e);
-		}
+		return $this->provider->access(\Input::get('code'));
 	}
 	
 }

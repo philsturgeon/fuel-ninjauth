@@ -17,12 +17,12 @@ class Controller extends \Controller {
 
 	public function action_session($provider)
 	{
-		Strategy::factory($provider)->authenticate();
+		Strategy::forge($provider)->authenticate();
 	}
 
 	public function action_callback($provider)
 	{
-		$strategy = Strategy::factory($provider);
+		$strategy = Strategy::forge($provider);
 		
 		Strategy::login_or_register($strategy);
 	}
