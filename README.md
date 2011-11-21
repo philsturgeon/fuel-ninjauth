@@ -1,4 +1,4 @@
-# NinjAuth v0.2.0
+# NinjAuth
 
 Use the Auth, OAuth and OAuth2 packages to authenticate users with an array of third-party services in a totally integrated and abstracted fashion.
 
@@ -24,6 +24,12 @@ NinjAuth comes from the company behind the project: [HappyNinjas](http://happyni
     $ oil refine migrate
 	
 	# Run migrations in the package to create "authentications" table
+	$ oil refine migrate --packages=ninjauth
+	
+## Upgrade
+
+Just the usual submodule update, and when you're done run:
+
 	$ oil refine migrate --packages=ninjauth
 
 ## Usage Example
