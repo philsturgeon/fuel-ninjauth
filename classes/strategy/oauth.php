@@ -47,7 +47,7 @@ class Strategy_OAuth extends Strategy {
 			$this->token = unserialize(base64_decode($token));
 		}
 			
-		if ($this->token AND $this->token->token !== \Input::get_post('oauth_token'))
+		if ($this->token AND $this->token->access_token !== \Input::get_post('oauth_token'))
 		{	
 			// Delete the token, it is not valid
 			\Cookie::delete('oauth_token');
