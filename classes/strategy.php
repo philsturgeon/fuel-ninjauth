@@ -28,6 +28,11 @@ abstract class Strategy {
 		
 		$this->config = \Config::get("ninjauth.providers.{$provider}");
 		
+		if ($this->config === null)
+		{
+			throw new Exception(sprintf('Provider "%s" has no config.', $provider));
+		}
+		
 		if ( ! $this->name)
 		{
 			// Attempt to guess the name from the class name
