@@ -96,7 +96,7 @@ abstract class Strategy {
 				// Attach this account to the logged in user
 				Model_Authentication::forge(array(
 					'user_id' 		=> $user_id,
-					'provider' 		=> $this->provider,
+					'provider' 		=> $strategy->provider->name,
 					'uid' 			=> $user_hash['uid'],
 					'access_token' 	=> isset($token->access_token) ? $token->access_token : null,
 					'secret' 		=> isset($token->secret) ? $token->secret : null,
@@ -129,7 +129,15 @@ abstract class Strategy {
 		
 		// They aren't a user, so redirect to registration page
 		else
-		{	
+		{
+			$user_hash['credentials'] = array(
+				'provider' 		=> $strategy->provider->name,
+				'uid' 			=> $user_hash['uid'],
+				'access_token' 	=> isset($token->access_token) ? $token->access_token : null,
+				'secret' 		=> isset($token->secret) ? $token->secret : null,
+				'expires' 		=> isset($token->expires) ? $token->expires : null,
+				'refresh_token' => isset($token->refresh_token) ? $token->refresh_token : null,
+				);
 			\Session::set('ninjauth', $user_hash);
 
 			\Response::redirect(\Config::get('ninjauth.urls.registration'));
