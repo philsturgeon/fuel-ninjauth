@@ -56,7 +56,7 @@ class Controller extends \Controller {
 					'user_id' => $user_id,
 					'provider' => $user_hash['credentials']['provider'],
 					'uid' => $user_hash['credentials']['uid'],
-					'token' => $user_hash['credentials']['token'],
+					'access_token' => $user_hash['credentials']['access_token'],
 					'secret' => $user_hash['credentials']['secret'],
 					'created_at' => time(),
 				))->save();
