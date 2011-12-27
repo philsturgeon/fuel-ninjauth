@@ -130,7 +130,17 @@ abstract class Strategy {
 		// They aren't a user, so redirect to registration page
 		else
 		{	
-			\Session::set('ninjauth', $user_hash);
+			\Session::set('ninjauth', array(
+				'user' => $user_hash,
+				'credentials' => array(
+					'provider' 		=> $this->provider,
+					'uid' 			=> $user_hash['uid'],
+					'access_token' 	=> isset($token->access_token) ? $token->access_token : null,
+					'secret' 		=> isset($token->secret) ? $token->secret : null,
+					'expires' 		=> isset($token->expires) ? $token->expires : null,
+					'refresh_token' => isset($token->refresh_token) ? $token->refresh_token : null,
+				),
+			));
 
 			\Response::redirect(\Config::get('ninjauth.urls.registration'));
 		}

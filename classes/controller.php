@@ -29,7 +29,8 @@ class Controller extends \Controller {
 
 	public function action_register()
 	{
-		$user_hash = \Session::get('ninjauth');
+		$user_hash = \Session::get('ninjauth.user');
+		$token = \Session::get('ninjauth.token');
 		
 		$full_name = \Input::post('full_name') ?: \Arr::get($user_hash, 'name');
 		$username = \Input::post('username') ?: \Arr::get($user_hash, 'nickname');
@@ -54,10 +55,12 @@ class Controller extends \Controller {
 			{
 				Model_Authentication::forge(array(
 					'user_id' => $user_id,
-					'provider' => $user_hash['credentials']['provider'],
-					'uid' => $user_hash['credentials']['uid'],
-					'token' => $user_hash['credentials']['token'],
-					'secret' => $user_hash['credentials']['secret'],
+					'provider' => $token['provider'],
+					'uid' => $token['uid'],
+					'access_token' => $token['access_token'],
+					'secret' => $token['secret'],
+					'refresh_token' => $token['refresh_token'],
+					'expires' => $token['expires'],
 					'created_at' => time(),
 				))->save();
 			}
