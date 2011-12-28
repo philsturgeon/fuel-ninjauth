@@ -22,7 +22,7 @@ abstract class Strategy {
 		'windowslive' => 'OAuth2',
 		'youtube' => 'OAuth2',
 	);
-	
+
 	public function __construct($provider)
 	{
 		$this->provider = $provider;
@@ -96,7 +96,7 @@ abstract class Strategy {
 				// Attach this account to the logged in user
 				Model_Authentication::forge(array(
 					'user_id' 		=> $user_id,
-					'provider' 		=> $this->provider,
+					'provider' 		=> $strategy->provider->name,
 					'uid' 			=> $user_hash['uid'],
 					'access_token' 	=> isset($token->access_token) ? $token->access_token : null,
 					'secret' 		=> isset($token->secret) ? $token->secret : null,
@@ -132,8 +132,8 @@ abstract class Strategy {
 		{	
 			\Session::set('ninjauth', array(
 				'user' => $user_hash,
-				'credentials' => array(
-					'provider' 		=> $this->provider,
+				'token' => array(
+					'provider' 		=> $strategy->provider->name,
 					'uid' 			=> $user_hash['uid'],
 					'access_token' 	=> isset($token->access_token) ? $token->access_token : null,
 					'secret' 		=> isset($token->secret) ? $token->secret : null,
