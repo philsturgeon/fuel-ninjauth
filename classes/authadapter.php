@@ -62,9 +62,9 @@ abstract class AuthAdapter {
 	
 	abstract public function check();
 	
-	abstract public function create_user();
+	abstract public function create_user($username, $password, $email, $group, $user_hash);
 	
-	abstract public function force_login();
+	abstract public function force_login($user_id);
 	
 	abstract public function get_user_id();	
 }

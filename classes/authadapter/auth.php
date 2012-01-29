@@ -12,10 +12,11 @@ class Adapter_Auth extends AuthAdapter {
     return \Auth::check();
   }
   
-  public function create_user($username, $password, $email, $group, $metadata)
+  public function create_user($username, $password, $email, $group, $user_hash)
   {
     try
     {
+      $metadata = empty($user_hash['name']) ? array() : array('full_name' => $user_hash['name']);
       $result = \Auth::create_user($username, $password, $email, $group, $metadata);
     }
     catch (SimpleUserUpdateException $e)
