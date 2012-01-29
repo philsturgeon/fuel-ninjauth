@@ -78,9 +78,11 @@ abstract class Strategy {
 				throw new Exception("Unsupported Strategy: {$strategy->name}");
 		}
 		
-		if (\Auth::check())
+		$auth_adapter = AuthAdapter::forge(\Config::get('ninjauth.auth_adapter', 'Auth'));
+		
+		if ($auth_adapter->check())
 		{
-			list($driver, $user_id) = \Auth::instance()->get_user_id();
+			$user_id = $auth_adapter->get_user_id();
 			
 			$num_linked = Model_Authentication::count_by_user_id($user_id);
 		
@@ -120,7 +122,7 @@ abstract class Strategy {
 		else if ($authentication = Model_Authentication::find_by_uid($user_hash['uid']))
 		{
 			// Force a login with this username
-			if (\Auth::instance()->force_login($authentication->user_id))
+			if ($auth_adapter->force_login($authentication->user_id))
 			{
 			    // credentials ok, go right in
 			    \Response::redirect(\Config::get('ninjauth.urls.logged_in'));

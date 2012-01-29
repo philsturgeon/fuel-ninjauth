@@ -37,15 +37,18 @@ class Controller extends \Controller {
 		$email = \Input::post('email') ?: \Arr::get($user_hash, 'email');
 		$password = \Input::post('password');
 		
+		// Use auth adapter to interface the auth class specified in the config file
+		$auth_adapter = AuthAdapter::forge(\Config::get('ninjauth.auth_adapter', 'Auth'));
+		
 		if ($username and $full_name and $email and $password)
 		{
 			try
 			{
-				$user_id = \Auth::create_user($username, $password, $email, \Config::get('ninjauth.default_group'), array(
-					'full_name' => $full_name,
-				));
+				// Just give the adapter the user hash, since different adapter might care about different keys
+				$user_id = $auth_adapter->create_user($username, $password, $email, \Config::get('ninjauth.default_group'), $user_hash);				
+
 			}
-			catch (SimpleUserUpdateException $e)
+			catch (Exception $e)
 			{
 				\Session::set_flash('ninjauth.error', $e->getMessage());
 				goto display;
