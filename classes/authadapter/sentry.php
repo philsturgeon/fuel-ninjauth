@@ -5,7 +5,7 @@
  
 namespace NinjAuth;
 
-class Adapter_Sentry extends AuthAdapter {
+class AuthAdapter_Sentry extends AuthAdapter {
   
   public function check()
   {
