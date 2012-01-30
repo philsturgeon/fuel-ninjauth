@@ -48,7 +48,7 @@ abstract class AuthAdapter {
 		}
 	}
 	
-	public static function forge($adapter)
+	public static function forge($adapter, $provider)
 	{		
 		if (empty($adapter))
 		{
@@ -57,7 +57,7 @@ abstract class AuthAdapter {
 		
 		$class = "NinjAuth\\AuthAdapter_{$adapter}";
 		
-		return new $class($adapter);
+		return new $class($adapter, $provider);
 	}
 	
 	abstract public function check();
