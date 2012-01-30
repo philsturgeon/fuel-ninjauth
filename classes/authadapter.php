@@ -25,6 +25,8 @@
  * Exceptions:
  * Auth exceptions and Sentry exceptions are caught and their message is re-thrown as Ninjauth\Exception. 
  * The client of the adapter remains agnostic to the class of exceptions thrown, and catches them as Ninjauth\Exception
+ *
+ * Note: Ninjauth will now log the user in after registration
  */
 
 namespace NinjAuth;

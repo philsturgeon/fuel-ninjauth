@@ -35,7 +35,8 @@ class AuthAdapter_Auth extends AuthAdapter {
   
   public function get_user_id()
   {
-    return \Auth::instance()->get_user_id();
+    list($driver, $user_id) = \Auth::instance()->get_user_id();
+    return $user_id;
   }
 
 }
