@@ -45,8 +45,7 @@ class Controller extends \Controller {
 			try
 			{
 				// Just give the adapter the user hash, since different adapter might care about different keys
-				$user_id = $auth_adapter->create_user($username, $password, $email, \Config::get('ninjauth.default_group'), $user_hash);				
-
+				$user_id = $auth_adapter->create_user($username, $password, $email, \Config::get('ninjauth.default_group'), $user_hash);										
 			}
 			catch (Exception $e)
 			{
@@ -55,7 +54,7 @@ class Controller extends \Controller {
 			}
 			
 			if ($user_id)
-			{
+			{				
 				Model_Authentication::forge(array(
 					'user_id' => $user_id,
 					'provider' => $authentication['provider'],
@@ -66,6 +65,9 @@ class Controller extends \Controller {
 					'expires' => $authentication['expires'],
 					'created_at' => time(),
 				))->save();
+				
+				// No reason not to log the new user in
+				$auth_adapter->force_login($user_id);
 			}
 			
 			\Response::redirect(\Config::get('ninjauth.urls.registered'));
