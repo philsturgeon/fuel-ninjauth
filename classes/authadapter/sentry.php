@@ -73,7 +73,8 @@ class AuthAdapter_Sentry extends AuthAdapter {
     // The provider will get stored in the sentry session
     try
     {
-      $result = \Sentry::force_login($user_id, $this->provider ?: 'Sentry-Forced');
+      // user id must be passed as an integer
+      $result = \Sentry::force_login(intval($user_id), $this->provider ?: 'Sentry-Forced');
     }
     catch(\SentryAuthException $e)
     {
