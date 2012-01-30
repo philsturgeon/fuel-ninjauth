@@ -60,7 +60,7 @@ class AuthAdapter_Sentry extends AuthAdapter {
         \Sentry::user($user_id)->add_to_group($group);
       }
     }
-    catch(SentryUserException $e)
+    catch(\Sentry\SentryUserException $e)
     {
       throw new Exception($e->getMessage());
     }  
