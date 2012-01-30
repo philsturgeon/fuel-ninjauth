@@ -38,7 +38,7 @@ class Controller extends \Controller {
 		$password = \Input::post('password');
 		
 		// Use auth adapter to interface the auth class specified in the config file
-		$auth_adapter = AuthAdapter::forge(\Config::get('ninjauth.auth_adapter', 'Auth'));
+		$auth_adapter = AuthAdapter::forge(\Config::get('ninjauth.auth_adapter', 'Auth'), $authentication['provider']);
 		
 		if ($username and $full_name and $email and $password)
 		{

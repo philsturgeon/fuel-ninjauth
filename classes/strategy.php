@@ -78,7 +78,7 @@ abstract class Strategy {
 				throw new Exception("Unsupported Strategy: {$strategy->name}");
 		}
 		
-		$auth_adapter = AuthAdapter::forge(\Config::get('ninjauth.auth_adapter', 'Auth'));
+		$auth_adapter = AuthAdapter::forge(\Config::get('ninjauth.auth_adapter', 'Auth'), $strategy->provider->name);
 		
 		if ($auth_adapter->check())
 		{

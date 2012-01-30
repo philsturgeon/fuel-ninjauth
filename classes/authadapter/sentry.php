@@ -60,7 +60,7 @@ class AuthAdapter_Sentry extends AuthAdapter {
         \Sentry::user($user_id)->add_to_group($group);
       }
     }
-    catch(\Sentry\SentryUserException $e)
+    catch(\SentryUserException $e)
     {
       throw new Exception($e->getMessage());
     }  
@@ -75,7 +75,7 @@ class AuthAdapter_Sentry extends AuthAdapter {
     {
       $result = \Sentry::force_login($user_id, $this->provider ?: 'Sentry-Forced');
     }
-    catch(SentryAuthException $e)
+    catch(\SentryAuthException $e)
     {
       throw new Exception($e->getMessage());
     }
@@ -89,7 +89,7 @@ class AuthAdapter_Sentry extends AuthAdapter {
     {
       $user_id = \Sentry::user()->get(\Config::get('sentry.users_primary_key', 'id'));
     }
-    catch (SentryUserException $e)
+    catch (\SentryUserException $e)
     {
       throw new Exception($e->getMessage());
     }
