@@ -3,12 +3,12 @@
 namespace NinjAuth;
 
 abstract class Strategy {
-	
+
 	/**
 	 * @var  string  Strategy name
 	 */
 	public $name;
-	
+
 	protected static $providers = array(
 		'facebook' => 'OAuth2',
 		'twitter' => 'OAuth',
@@ -22,44 +22,44 @@ abstract class Strategy {
 		'windowslive' => 'OAuth2',
 		'youtube' => 'OAuth2',
 	);
-	
+
 	public function __construct($provider)
 	{
 		$this->provider = $provider;
-		
+
 		$this->config = \Config::get("ninjauth.providers.{$provider}");
-		
+
 		if ($this->config === null)
 		{
 			throw new Exception(sprintf('Provider "%s" has no config.', $provider));
 		}
-		
+
 		if ( ! $this->name)
 		{
 			// Attempt to guess the name from the class name
 			$this->name = strtolower(str_replace('NinjAuth\Strategy_', '', get_class($this)));
 		}
 	}
-	
+
 	public static function forge($provider)
 	{
 		// If a strategy has been specified use it, otherwise look it up
 		$strategy = \Config::get("ninjauth.providers.{$provider}.strategy") ?: \Arr::get(static::$providers, $provider);
-		
+
 		if (is_null($strategy))
 		{
 			throw new Exception(sprintf('Provider "%s" has no strategy.', $provider));
 		}
-		
+
 		$class = "NinjAuth\\Strategy_{$strategy}";
-		
+
 		return new $class($provider);
 	}
-	
+
 	public static function login_or_register($strategy)
 	{
 		$token = $strategy->callback();
-		
+
 		switch ($strategy->name)
 		{
 		 	case 'oauth':
@@ -77,13 +77,13 @@ abstract class Strategy {
 			default:
 				throw new Exception("Unsupported Strategy: {$strategy->name}");
 		}
-		
+
 		if (\Auth::check())
 		{
 			list($driver, $user_id) = \Auth::instance()->get_user_id();
-			
+
 			$num_linked = Model_Authentication::count_by_user_id($user_id);
-		
+
 			// Allowed multiple providers, or not authed yet?
 			if ($num_linked === 0 or \Config::get('ninjauth.link_multiple_providers') === true)
 			{
@@ -92,7 +92,7 @@ abstract class Strategy {
 				{
 					throw new Exception('No uid in response.');
 				}
-				
+
 				// Attach this account to the logged in user
 				Model_Authentication::forge(array(
 					'user_id' 		=> $user_id,
@@ -108,14 +108,14 @@ abstract class Strategy {
 				// Attachment went ok so we'll redirect
 				\Response::redirect(\Config::get('ninjauth.urls.logged_in'));
 			}
-			
+
 			else
 			{
 				$auth = Model_Authentication::find_by_user_id($user_id);
 				throw new Exception(sprintf('This user is already linked to "%s".', $auth->provider));
 			}
 		}
-		
+
 		// The user exists, so send him on his merry way as a user
 		else if ($authentication = Model_Authentication::find_by_uid($user_hash['uid']))
 		{
@@ -126,10 +126,10 @@ abstract class Strategy {
 			    \Response::redirect(\Config::get('ninjauth.urls.logged_in'));
 			}
 		}
-		
+
 		// They aren't a user, so redirect to registration page
 		else
-		{	
+		{
 			\Session::set('ninjauth', array(
 				'user' => $user_hash,
 				'authentication' => array(
