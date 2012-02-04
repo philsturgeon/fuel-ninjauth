@@ -15,7 +15,7 @@ class Strategy_OAuth extends Strategy {
 		$provider = \OAuth\Provider::forge($this->provider);
 		
 		// Create the URL to return the user to
-		$callback = \Arr::get($this->config, 'callback') ?: \Uri::create(\Config::get('ninjauth.urls.callback', \Request::active()->route->segments[0].'/callback/'.$this->provider));
+		$callback = \Arr::get($this->config, 'callback') ?: \Uri::create(\Config::get('ninjauth.urls.callback', \Request::active()->route->segments[0].'/callback').'/'.$this->provider);
 		
 		// Add the callback URL to the consumer
 		$consumer->callback($callback);	
@@ -48,7 +48,7 @@ class Strategy_OAuth extends Strategy {
 		}
 			
 		if ($this->token AND $this->token->access_token !== \Input::get_post('oauth_token'))
-		{	
+		{
 			// Delete the token, it is not valid
 			\Cookie::delete('oauth_token');
 
