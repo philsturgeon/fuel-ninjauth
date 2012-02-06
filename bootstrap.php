@@ -11,6 +11,7 @@
 
 Autoloader::add_classes(array(
 	'NinjAuth\\Controller'           	=> __DIR__.'/classes/controller.php',
+	'NinjAuth\\ControllerTemplate'           	=> __DIR__.'/classes/controller_template.php',
 	'NinjAuth\\Exception'  				=> __DIR__.'/classes/exception.php',
 	'NinjAuth\\Model_Authentication'  	=> __DIR__.'/classes/model/authentication.php',
 
