@@ -64,21 +64,24 @@ abstract class Strategy {
 		{
 		 	case 'oauth':
 				$user_hash = $strategy->provider->get_user_info($strategy->consumer, $token);
+				$provider_name = $strategy->provider->name;
 			break;
 
 			case 'oauth2':
 				$user_hash = $strategy->provider->get_user_info($token);
+				$provider_name = $strategy->provider->name;
 			break;
 
 			case 'openid':
 				$user_hash = $strategy->get_user_info($token);
+				$provider_name = $strategy->provider;
 			break;
 
 			default:
 				throw new Exception("Unsupported Strategy: {$strategy->name}");
 		}
 		
-		$auth_adapter = AuthAdapter::forge(\Config::get('ninjauth.auth_adapter', 'Auth'), $strategy->provider->name);
+		$auth_adapter = AuthAdapter::forge(\Config::get('ninjauth.auth_adapter', 'Auth'), $provider_name);
 		
 		if ($auth_adapter->check())
 		{
@@ -98,7 +101,7 @@ abstract class Strategy {
 				// Attach this account to the logged in user
 				Model_Authentication::forge(array(
 					'user_id' 		=> $user_id,
-					'provider' 		=> $strategy->provider->name,
+					'provider' 		=> $provider_name,
 					'uid' 			=> $user_hash['uid'],
 					'access_token' 	=> isset($token->access_token) ? $token->access_token : null,
 					'secret' 		=> isset($token->secret) ? $token->secret : null,
@@ -135,7 +138,7 @@ abstract class Strategy {
 			\Session::set('ninjauth', array(
 				'user' => $user_hash,
 				'authentication' => array(
-					'provider' 		=> $strategy->provider->name,
+					'provider' 		=> $provider_name,
 					'uid' 			=> $user_hash['uid'],
 					'access_token' 	=> isset($token->access_token) ? $token->access_token : null,
 					'secret' 		=> isset($token->secret) ? $token->secret : null,
