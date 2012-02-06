@@ -22,6 +22,9 @@ class Strategy_OpenId extends Strategy
 	{
 		parent::__construct($provider);
 		$this->openid = new \LightOpenID(\Input::server('HTTP_HOST'));
+		
+		// Add the provider name
+		$this->provider = (object) array('name' => $provider);
 	}
 
 	/**
