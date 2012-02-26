@@ -97,10 +97,12 @@ class Strategy_OpenId extends Strategy
 		$r = '';
 		if (is_array($map))
 		{
+			$r = array();
 			foreach ($map as $m)
 			{
-				$r .= $this->get_data($m, $data);
+				$r[] = $this->get_data($m, $data);
 			}
+			$r = implode(' ', $r);
 		}
 		else if (array_key_exists($map, $data))
 		{
