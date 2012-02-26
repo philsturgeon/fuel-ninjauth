@@ -69,9 +69,11 @@ class Strategy_OpenId extends Strategy
 		{
 			throw new Exception('Invalid OpenId response');
 		}
+		$this->provider = (object) array('name' => 'openid');
 
 		return (object) array(
 			'access_token' => $this->openid->identity,
+			'secret' => 'none' // necessary due to DB constraint
 		);
 	}
 
