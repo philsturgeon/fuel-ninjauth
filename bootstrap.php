@@ -11,6 +11,7 @@
 
 Autoloader::add_classes(array(
 	'NinjAuth\\Controller'           	=> __DIR__.'/classes/controller.php',
+	'NinjAuth\\ControllerTemplate'           	=> __DIR__.'/classes/controller_template.php',
 	'NinjAuth\\Exception'  				=> __DIR__.'/classes/exception.php',
 	'NinjAuth\\Model_Authentication'  	=> __DIR__.'/classes/model/authentication.php',
 
@@ -18,6 +19,10 @@ Autoloader::add_classes(array(
 	'NinjAuth\\Strategy_OAuth'  		=> __DIR__.'/classes/strategy/oauth.php',
 	'NinjAuth\\Strategy_OAuth2'  		=> __DIR__.'/classes/strategy/oauth2.php',
 	'NinjAuth\\Strategy_OpenId'  		=> __DIR__.'/classes/strategy/openid.php',
+	
+	'NinjAuth\\AuthAdapter'  				=> __DIR__.'/classes/authadapter.php',
+	'NinjAuth\\AuthAdapter_Auth'  	=> __DIR__.'/classes/authadapter/auth.php',
+	'NinjAuth\\AuthAdapter_Sentry'  => __DIR__.'/classes/authadapter/sentry.php',
 ));
 
 /* End of file bootstrap.php */

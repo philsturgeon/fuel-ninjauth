@@ -5,7 +5,7 @@
 
 namespace NinjAuth;
 
-class Controller extends \Controller {
+class ControllerTemplate extends \Controller_Template {
 
 	public function before()
 	{
@@ -75,10 +75,9 @@ class Controller extends \Controller {
 		
 		display:
 		
-		$this->response->body = \View::forge('register', array(
+		$this->template->content = \View::forge('register', array(
 			'user' => (object) compact('username', 'full_name', 'email', 'password')
 		));
 	}
-	
 	
 }

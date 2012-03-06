@@ -64,23 +64,28 @@ abstract class Strategy {
 		{
 		 	case 'oauth':
 				$user_hash = $strategy->provider->get_user_info($strategy->consumer, $token);
+				$provider_name = $strategy->provider->name;
 			break;
 
 			case 'oauth2':
 				$user_hash = $strategy->provider->get_user_info($token);
+				$provider_name = $strategy->provider->name;
 			break;
 
 			case 'openid':
 				$user_hash = $strategy->get_user_info($token);
+				$provider_name = $strategy->provider;
 			break;
 
 			default:
 				throw new Exception("Unsupported Strategy: {$strategy->name}");
 		}
 		
-		if (\Auth::check())
+		$auth_adapter = AuthAdapter::forge(\Config::get('ninjauth.auth_adapter', 'Auth'), $provider_name);
+		
+		if ($auth_adapter->check())
 		{
-			list($driver, $user_id) = \Auth::instance()->get_user_id();
+			$user_id = $auth_adapter->get_user_id();
 			
 			$num_linked = Model_Authentication::count_by_user_id($user_id);
 		
@@ -96,7 +101,7 @@ abstract class Strategy {
 				// Attach this account to the logged in user
 				Model_Authentication::forge(array(
 					'user_id' 		=> $user_id,
-					'provider' 		=> $strategy->provider->name,
+					'provider' 		=> $provider_name,
 					'uid' 			=> $user_hash['uid'],
 					'access_token' 	=> isset($token->access_token) ? $token->access_token : null,
 					'secret' 		=> isset($token->secret) ? $token->secret : null,
@@ -120,7 +125,7 @@ abstract class Strategy {
 		else if ($authentication = Model_Authentication::find_by_uid($user_hash['uid']))
 		{
 			// Force a login with this username
-			if (\Auth::instance()->force_login($authentication->user_id))
+			if ($auth_adapter->force_login($authentication->user_id))
 			{
 			    // credentials ok, go right in
 			    \Response::redirect(\Config::get('ninjauth.urls.logged_in'));
@@ -133,7 +138,7 @@ abstract class Strategy {
 			\Session::set('ninjauth', array(
 				'user' => $user_hash,
 				'authentication' => array(
-					'provider' 		=> $strategy->provider->name,
+					'provider' 		=> $provider_name,
 					'uid' 			=> $user_hash['uid'],
 					'access_token' 	=> isset($token->access_token) ? $token->access_token : null,
 					'secret' 		=> isset($token->secret) ? $token->secret : null,

@@ -73,4 +73,11 @@ return array(
 	 * How should users be signed up
 	 */
 	'default_group' => 1,
+	
+  /**
+	 * auth_adapter
+	 * 
+	 * Authentication class to use, 'Auth' or 'Sentry', default 'Auth'
+	 */
+	 'auth_adapter' => 'Auth'
 );
