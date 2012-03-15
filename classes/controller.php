@@ -31,6 +31,9 @@ class Controller extends \Controller {
 	{
 		$user_hash = \Session::get('ninjauth.user');
 		$authentication = \Session::get('ninjauth.authentication');
+
+		// Working with what?
+		$strategy = Strategy::forge($authentication['provider']);
 		
 		$full_name = \Input::post('full_name') ?: \Arr::get($user_hash, 'name');
 		$username = \Input::post('username') ?: \Arr::get($user_hash, 'nickname');
@@ -39,18 +42,13 @@ class Controller extends \Controller {
 		
 		if ($username and $full_name and $email and $password)
 		{
-			try
-			{
-				$user_id = \Auth::create_user($username, $password, $email, \Config::get('ninjauth.default_group'), array(
-					'full_name' => $full_name,
-				));
-			}
-			catch (SimpleUserUpdateException $e)
-			{
-				\Session::set_flash('ninjauth.error', $e->getMessage());
-				goto display;
-			}
-			
+			$user_id = $strategy->adapter->create_user(array(
+				'username' => $username,
+				'email' => $email,
+				'full_name' => $full_name,
+				'password' => $password,
+			));
+
 			if ($user_id)
 			{
 				Model_Authentication::forge(array(
@@ -63,12 +61,10 @@ class Controller extends \Controller {
 					'expires' => $authentication['expires'],
 					'created_at' => time(),
 				))->save();
+
+				\Response::redirect(\Config::get('ninjauth.urls.registered'));
 			}
-			
-			\Response::redirect(\Config::get('ninjauth.urls.registered'));
 		}
-		
-		display:
 		
 		$this->response->body = \View::forge('register', array(
 			'user' => (object) compact('username', 'full_name', 'email', 'password')

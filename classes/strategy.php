@@ -2,8 +2,8 @@
 
 namespace NinjAuth;
 
-abstract class Strategy {
-	
+abstract class Strategy
+{
 	/**
 	 * @var  string  Strategy name
 	 */
@@ -27,7 +27,11 @@ abstract class Strategy {
 	{
 		$this->provider = $provider;
 		
+		// Take config from the ninjauth.php
 		$this->config = \Config::get("ninjauth.providers.{$provider}");
+
+		// Adapters interact with user systems and whatnot
+		$this->adapter = Adapter::forge(\Config::get('ninjauth.adapter'));
 		
 		if ($this->config === null)
 		{
@@ -78,21 +82,22 @@ abstract class Strategy {
 				throw new Exception("Unsupported Strategy: {$strategy->name}");
 		}
 		
-		if (\Auth::check())
+		// If there is no uid we don't know who this is
+		if (empty($user_hash['uid']))
 		{
-			list($driver, $user_id) = \Auth::instance()->get_user_id();
+			throw new Exception('No uid in response from the provider, meaning we have no idea who you are.');
+		}
+
+		// UID and logged in? Just attach this authentication to a user
+		if ($strategy->adapter->is_logged_in())
+		{
+			$user_id = $strategy->adapter->get_user_id();
 			
 			$num_linked = Model_Authentication::count_by_user_id($user_id);
 		
 			// Allowed multiple providers, or not authed yet?
 			if ($num_linked === 0 or \Config::get('ninjauth.link_multiple_providers') === true)
 			{
-				// If there is no uid we can't remember who this is
-				if ( ! isset($user_hash['uid']))
-				{
-					throw new Exception('No uid in response.');
-				}
-				
 				// Attach this account to the logged in user
 				Model_Authentication::forge(array(
 					'user_id' 		=> $user_id,
@@ -120,29 +125,61 @@ abstract class Strategy {
 		else if ($authentication = Model_Authentication::find_by_uid($user_hash['uid']))
 		{
 			// Force a login with this username
-			if (\Auth::instance()->force_login($authentication->user_id))
+			if ($strategy->adapter->force_login((int) $authentication->user_id))
 			{
 			    // credentials ok, go right in
 			    \Response::redirect(\Config::get('ninjauth.urls.logged_in'));
 			}
 		}
 		
-		// They aren't a user, so redirect to registration page
+		// Not an existing user of any type, so we need to create a user somehow
 		else
-		{	
-			\Session::set('ninjauth', array(
-				'user' => $user_hash,
-				'authentication' => array(
+		{
+			// Did the provider return enough information to log the user in?
+			if ($strategy->adapter->can_auto_login($user_hash))
+			{
+				// Make a user with what we have (password is made for them)
+				$user_id = $strategy->adapter->create_user($user_hash);
+
+				// Attach this authentication to the new user
+				$saved = Model_Authentication::forge(array(
+					'user_id' 		=> $user_id,
 					'provider' 		=> $strategy->provider->name,
 					'uid' 			=> $user_hash['uid'],
 					'access_token' 	=> isset($token->access_token) ? $token->access_token : null,
 					'secret' 		=> isset($token->secret) ? $token->secret : null,
 					'expires' 		=> isset($token->expires) ? $token->expires : null,
 					'refresh_token' => isset($token->refresh_token) ? $token->refresh_token : null,
-				),
-			));
+					'created_at' 	=> time(),
+				))->save();
 
-			\Response::redirect(\Config::get('ninjauth.urls.registration'));
+				// Force a login with this users id
+				if ($saved and $strategy->adapter->force_login($user_id))
+				{
+				    // credentials ok, go right in
+				    \Response::redirect(\Config::get('ninjauth.urls.logged_in'));
+				}
+
+				exit('We tried automatically creating a user but that just really did not work. Not sure why...');
+			}
+
+			// They aren't a user and cant be automatically registerd, so redirect to registration page
+			else
+			{
+				\Session::set('ninjauth', array(
+					'user' => $user_hash,
+					'authentication' => array(
+						'provider' 		=> $strategy->provider->name,
+						'uid' 			=> $user_hash['uid'],
+						'access_token' 	=> isset($token->access_token) ? $token->access_token : null,
+						'secret' 		=> isset($token->secret) ? $token->secret : null,
+						'expires' 		=> isset($token->expires) ? $token->expires : null,
+						'refresh_token' => isset($token->refresh_token) ? $token->refresh_token : null,
+					),
+				));
+
+				\Response::redirect(\Config::get('ninjauth.urls.registration'));
+			}
 		}
 	}
 
