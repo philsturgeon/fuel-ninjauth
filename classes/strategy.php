@@ -2,6 +2,16 @@
 
 namespace NinjAuth;
 
+/**
+ * NinjAuth Strategy
+ *
+ * @package    FuelPHP/NinjAuth
+ * @category   Stategies
+ * @author     Phil Sturgeon
+ * @copyright  (c) 2012 HappyNinjas Ltd
+ * @license    http://philsturgeon.co.uk/code/dbad-license
+ */
+
 abstract class Strategy
 {
 	/**
@@ -12,15 +22,16 @@ abstract class Strategy
 	protected static $providers = array(
 		'facebook' => 'OAuth2',
 		'twitter' => 'OAuth',
+		'blooie' => 'OAuth2',
 		'dropbox' => 'OAuth',
 		'flickr' => 'OAuth',
 		'google' => 'OAuth2',
 		'github' => 'OAuth2',
 		'linkedin' => 'OAuth',
+		'paypal' => 'OAuth2',
 		'openid' => 'OpenId',
-		'unmagnify' => 'OAuth2',
+		'soundcloud' => 'OAuth2',
 		'windowslive' => 'OAuth2',
-		'youtube' => 'OAuth2',
 	);
 	
 	public function __construct($provider)

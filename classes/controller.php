@@ -1,9 +1,16 @@
 <?php
-/**
- * Module controller in the Mymodule module
- */
 
 namespace NinjAuth;
+
+/**
+ * NinjAuth Controller
+ *
+ * @package    FuelPHP/NinjAuth
+ * @category   Controller
+ * @author     Phil Sturgeon
+ * @copyright  (c) 2012 HappyNinjas Ltd
+ * @license    http://philsturgeon.co.uk/code/dbad-license
+ */
 
 class Controller extends \Controller {
 

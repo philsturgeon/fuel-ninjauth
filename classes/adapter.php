@@ -2,6 +2,18 @@
 
 namespace NinjAuth;
 
+/**
+ * NinjAuth Adapter
+ * 
+ * Base class for any user adapters, so they know which methods to implement.
+ *
+ * @package    FuelPHP/NinjAuth
+ * @category   Adapter
+ * @author     Phil Sturgeon
+ * @copyright  (c) 2012 HappyNinjas Ltd
+ * @license    http://philsturgeon.co.uk/code/dbad-license
+ */
+
 abstract class Adapter
 {
 	/**
