@@ -2,6 +2,10 @@
 
 namespace NinjAuth;
 
+use Arr;
+use Config;
+use Session;
+
 /**
  * NinjAuth Strategy
  *
@@ -39,10 +43,10 @@ abstract class Strategy
 		$this->provider = $provider;
 		
 		// Take config from the ninjauth.php
-		$this->config = \Config::get("ninjauth.providers.{$provider}");
+		$this->config = Config::get("ninjauth.providers.{$provider}");
 
 		// Adapters interact with user systems and whatnot
-		$this->adapter = Adapter::forge(\Config::get('ninjauth.adapter'));
+		$this->adapter = Adapter::forge(Config::get('ninjauth.adapter'));
 		
 		if ($this->config === null)
 		{
@@ -59,7 +63,7 @@ abstract class Strategy
 	public static function forge($provider)
 	{
 		// If a strategy has been specified use it, otherwise look it up
-		$strategy = \Config::get("ninjauth.providers.{$provider}.strategy") ?: \Arr::get(static::$providers, $provider);
+		$strategy = Config::get("ninjauth.providers.{$provider}.strategy") ?: Arr::get(static::$providers, $provider);
 		
 		if (is_null($strategy))
 		{
@@ -71,26 +75,26 @@ abstract class Strategy
 		return new $class($provider);
 	}
 	
-	public static function login_or_register($strategy)
+	public function login_or_register()
 	{
-		$token = $strategy->callback();
+		$token = $this->callback();
 		
-		switch ($strategy->name)
+		switch ($this->name)
 		{
 		 	case 'oauth':
-				$user_hash = $strategy->provider->get_user_info($strategy->consumer, $token);
+				$user_hash = $this->provider->get_user_info($this->consumer, $token);
 			break;
 
 			case 'oauth2':
-				$user_hash = $strategy->provider->get_user_info($token);
+				$user_hash = $this->provider->get_user_info($token);
 			break;
 
 			case 'openid':
-				$user_hash = $strategy->get_user_info($token);
+				$user_hash = $this->get_user_info($token);
 			break;
 
 			default:
-				throw new Exception("Unsupported Strategy: {$strategy->name}");
+				throw new Exception("Unsupported Strategy: {$this->name}");
 		}
 		
 		// If there is no uid we don't know who this is
@@ -100,19 +104,19 @@ abstract class Strategy
 		}
 
 		// UID and logged in? Just attach this authentication to a user
-		if ($strategy->adapter->is_logged_in())
+		if ($this->adapter->is_logged_in())
 		{
-			$user_id = $strategy->adapter->get_user_id();
+			$user_id = $this->adapter->get_user_id();
 			
-			$num_linked = Model_Authentication::count_by_user_id($user_id);
+			$num_linked = count(Model_Authentication::find_by_user_id($user_id));
 		
 			// Allowed multiple providers, or not authed yet?
-			if ($num_linked === 0 or \Config::get('ninjauth.link_multiple_providers') === true)
+			if ($num_linked === 0 or Config::get('ninjauth.link_multiple_providers') === true)
 			{
 				// Attach this account to the logged in user
 				Model_Authentication::forge(array(
 					'user_id' 		=> $user_id,
-					'provider' 		=> $strategy->provider->name,
+					'provider' 		=> $this->provider->name,
 					'uid' 			=> $user_hash['uid'],
 					'access_token' 	=> isset($token->access_token) ? $token->access_token : null,
 					'secret' 		=> isset($token->secret) ? $token->secret : null,
@@ -122,7 +126,7 @@ abstract class Strategy
 				))->save();
 
 				// Attachment went ok so we'll redirect
-				\Response::redirect(\Config::get('ninjauth.urls.logged_in'));
+				return Config::get('ninjauth.urls.logged_in');
 			}
 			
 			else
@@ -133,13 +137,13 @@ abstract class Strategy
 		}
 		
 		// The user exists, so send him on his merry way as a user
-		else if ($authentication = Model_Authentication::find_by_uid($user_hash['uid']))
+		else if (($authentication = Model_Authentication::find_by_uid($user_hash['uid'])))
 		{
 			// Force a login with this username
-			if ($strategy->adapter->force_login((int) $authentication->user_id))
+			if ($this->adapter->force_login((int) $authentication->user_id))
 			{
 			    // credentials ok, go right in
-			    \Response::redirect(\Config::get('ninjauth.urls.logged_in'));
+			    return Config::get('ninjauth.urls.logged_in');
 			}
 		}
 		
@@ -147,15 +151,15 @@ abstract class Strategy
 		else
 		{
 			// Did the provider return enough information to log the user in?
-			if ($strategy->adapter->can_auto_login($user_hash))
+			if ($this->adapter->can_auto_login($user_hash))
 			{
 				// Make a user with what we have (password is made for them)
-				$user_id = $strategy->adapter->create_user($user_hash);
+				$user_id = $this->adapter->create_user($user_hash);
 
 				// Attach this authentication to the new user
 				$saved = Model_Authentication::forge(array(
 					'user_id' 		=> $user_id,
-					'provider' 		=> $strategy->provider->name,
+					'provider' 		=> $this->provider->name,
 					'uid' 			=> $user_hash['uid'],
 					'access_token' 	=> isset($token->access_token) ? $token->access_token : null,
 					'secret' 		=> isset($token->secret) ? $token->secret : null,
@@ -165,10 +169,10 @@ abstract class Strategy
 				))->save();
 
 				// Force a login with this users id
-				if ($saved and $strategy->adapter->force_login($user_id))
+				if ($saved and $this->adapter->force_login($user_id))
 				{
 				    // credentials ok, go right in
-				    \Response::redirect(\Config::get('ninjauth.urls.logged_in'));
+				    return Config::get('ninjauth.urls.logged_in');
 				}
 
 				exit('We tried automatically creating a user but that just really did not work. Not sure why...');
@@ -177,10 +181,10 @@ abstract class Strategy
 			// They aren't a user and cant be automatically registerd, so redirect to registration page
 			else
 			{
-				\Session::set('ninjauth', array(
+				Session::set('ninjauth', array(
 					'user' => $user_hash,
 					'authentication' => array(
-						'provider' 		=> $strategy->provider->name,
+						'provider' 		=> $this->provider->name,
 						'uid' 			=> $user_hash['uid'],
 						'access_token' 	=> isset($token->access_token) ? $token->access_token : null,
 						'secret' 		=> isset($token->secret) ? $token->secret : null,
@@ -189,7 +193,7 @@ abstract class Strategy
 					),
 				));
 
-				\Response::redirect(\Config::get('ninjauth.urls.registration'));
+				return Config::get('ninjauth.urls.registration');
 			}
 		}
 	}

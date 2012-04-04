@@ -12,8 +12,8 @@ namespace NinjAuth;
  * @license    http://philsturgeon.co.uk/code/dbad-license
  */
 
-class Controller extends \Controller {
-
+class Controller extends \Controller
+{
 	public function before()
 	{
 		parent::before();
@@ -24,14 +24,17 @@ class Controller extends \Controller {
 
 	public function action_session($provider)
 	{
-		Strategy::forge($provider)->authenticate();
+		$url = Strategy::forge($provider)->authenticate();
+		
+		\Response::redirect($url);
 	}
 
 	public function action_callback($provider)
 	{
-		$strategy = Strategy::forge($provider);
+		// Whatever happens, we're sending somebody somewhere
+		$url = Strategy::forge($provider)->login_or_register();
 		
-		Strategy::login_or_register($strategy);
+		\Response::redirect($url);
 	}
 
 	public function action_register()
@@ -77,6 +80,4 @@ class Controller extends \Controller {
 			'user' => (object) compact('username', 'full_name', 'email', 'password')
 		));
 	}
-	
-	
 }
