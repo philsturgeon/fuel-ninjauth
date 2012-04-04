@@ -26,10 +26,9 @@ class Strategy_OAuth extends Strategy {
 		// Store the token
 		\Cookie::set('oauth_token', base64_encode(serialize($token)));
 
-		// Redirect to the twitter login page
-		\Response::redirect($provider->authorize_url($token, array(
+		return $provider->authorize_url($token, array(
 			'oauth_callback' => $callback,
-		)));
+		));
 	}
 	
 	

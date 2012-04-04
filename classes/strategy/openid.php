@@ -45,13 +45,12 @@ class Strategy_OpenId extends Strategy
 
 		try
 		{
-			header('Location: '.$this->openid->authUrl());
+			return $this->openid->authUrl();
 		}
 		catch(Exception $e)
 		{
 			throw new Exception('Unable to find OpenId provider URL', 404, $e);
 		}
-		exit(); // must exit here since we do a redirection.
 	}
 
 	/**
@@ -65,7 +64,7 @@ class Strategy_OpenId extends Strategy
 		{
 			throw new CancelException('User canceled the process');
 		}
-		if (! $this->openid->validate())
+		if ( ! $this->openid->validate())
 		{
 			throw new Exception('Invalid OpenId response');
 		}

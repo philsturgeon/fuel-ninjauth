@@ -17,7 +17,7 @@ class Strategy_OAuth2 extends Strategy {
 			$provider->callback = \Uri::create(\Config::get('ninjauth.urls.callback', \Request::active()->route->segments[0].'/callback').'/'.$this->provider);
 		}
 		
-		$provider->authorize(array(
+		return $provider->authorize(array(
 			'redirect_uri' => $provider->callback
 		));
 	}
