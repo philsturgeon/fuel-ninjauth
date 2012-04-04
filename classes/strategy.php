@@ -24,18 +24,19 @@ abstract class Strategy
 	public $name;
 	
 	protected static $providers = array(
-		'facebook' => 'OAuth2',
-		'twitter' => 'OAuth',
-		'blooie' => 'OAuth2',
-		'dropbox' => 'OAuth',
-		'flickr' => 'OAuth',
-		'google' => 'OAuth2',
-		'github' => 'OAuth2',
-		'linkedin' => 'OAuth',
-		'paypal' => 'OAuth2',
-		'openid' => 'OpenId',
-		'soundcloud' => 'OAuth2',
-		'windowslive' => 'OAuth2',
+		'blooie' 		=> 'OAuth2',
+		'dropbox' 		=> 'OAuth',
+		'facebook' 		=> 'OAuth2',
+		'foursquare' 	=> 'OAuth2',
+		'flickr' 		=> 'OAuth',
+		'google' 		=> 'OAuth2',
+		'github' 		=> 'OAuth2',
+		'linkedin' 		=> 'OAuth',
+		'openid' 		=> 'OpenId',
+		'paypal' 		=> 'OAuth2',
+		'soundcloud' 	=> 'OAuth2',
+		'twitter' 		=> 'OAuth',
+		'windowslive' 	=> 'OAuth2',
 	);
 	
 	public function __construct($provider)
@@ -63,11 +64,16 @@ abstract class Strategy
 	public static function forge($provider)
 	{
 		// If a strategy has been specified use it, otherwise look it up
-		$strategy = Config::get("ninjauth.providers.{$provider}.strategy") ?: Arr::get(static::$providers, $provider);
-		
-		if (is_null($strategy))
+		if ( ! ($strategy = Config::get("ninjauth.providers.{$provider}.strategy")))
 		{
-			throw new Exception(sprintf('Provider "%s" has no strategy.', $provider));
+			if (isset(static::$providers[$provider]))
+			{
+				$strategy = static::$providers[$provider];
+			}
+			else
+			{
+				throw new Exception(sprintf('Provider "%s" has no strategy.', $provider));
+			}
 		}
 		
 		$class = "NinjAuth\\Strategy_{$strategy}";
@@ -107,7 +113,7 @@ abstract class Strategy
 		if ($this->adapter->is_logged_in())
 		{
 			$user_id = $this->adapter->get_user_id();
-			
+
 			$num_linked = count(Model_Authentication::find_by_user_id($user_id));
 		
 			// Allowed multiple providers, or not authed yet?
@@ -142,6 +148,8 @@ abstract class Strategy
 			// Force a login with this username
 			if ($this->adapter->force_login((int) $authentication->user_id))
 			{
+				Session::set_flash('You have been logged in.');
+
 			    // credentials ok, go right in
 			    return Config::get('ninjauth.urls.logged_in');
 			}
@@ -172,7 +180,7 @@ abstract class Strategy
 				if ($saved and $this->adapter->force_login($user_id))
 				{
 				    // credentials ok, go right in
-				    return Config::get('ninjauth.urls.logged_in');
+				    return Config::get('ninjauth.urls.registered');
 				}
 
 				exit('We tried automatically creating a user but that just really did not work. Not sure why...');

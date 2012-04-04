@@ -40,7 +40,7 @@ class Strategy_OAuth extends Strategy {
 		// Load the provider
 		$this->provider = \OAuth\Provider::forge($this->provider);
 		
-		if ($token = \Cookie::get('oauth_token'))
+		if (($token = \Cookie::get('oauth_token')))
 		{
 			// Get the token from storage
 			$this->token = unserialize(base64_decode($token));
@@ -48,13 +48,12 @@ class Strategy_OAuth extends Strategy {
 			
 		if ($this->token AND $this->token->access_token !== \Input::get_post('oauth_token'))
 		{
-			// Delete the token, it is not valid
-			\Cookie::delete('oauth_token');
-
 			// Send the user back to the beginning
 			exit('invalid token after coming back to site');
 		}
 
+		\Cookie::delete('oauth_token');
+		
 		// Get the verifier
 		$verifier = \Input::get_post('oauth_verifier');
 

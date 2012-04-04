@@ -2,6 +2,11 @@
 
 namespace NinjAuth;
 
+use Arr;
+use Config;
+use Input;
+use Response;
+
 /**
  * NinjAuth Controller
  *
@@ -19,14 +24,14 @@ class Controller extends \Controller
 		parent::before();
 
 		// Load the configuration for this provider
-		\Config::load('ninjauth', true);
+		Config::load('ninjauth', true);
 	}
 
 	public function action_session($provider)
 	{
 		$url = Strategy::forge($provider)->authenticate();
 		
-		\Response::redirect($url);
+		Response::redirect($url);
 	}
 
 	public function action_callback($provider)
@@ -34,21 +39,21 @@ class Controller extends \Controller
 		// Whatever happens, we're sending somebody somewhere
 		$url = Strategy::forge($provider)->login_or_register();
 		
-		\Response::redirect($url);
+		Response::redirect($url);
 	}
 
 	public function action_register()
 	{
-		$user_hash = \Session::get('ninjauth.user');
-		$authentication = \Session::get('ninjauth.authentication');
+		$user_hash = Session::get('ninjauth.user');
+		$authentication = Session::get('ninjauth.authentication');
 
 		// Working with what?
 		$strategy = Strategy::forge($authentication['provider']);
 		
-		$full_name = \Input::post('full_name') ?: \Arr::get($user_hash, 'name');
-		$username = \Input::post('username') ?: \Arr::get($user_hash, 'nickname');
-		$email = \Input::post('email') ?: \Arr::get($user_hash, 'email');
-		$password = \Input::post('password');
+		$full_name = Input::post('full_name') ?: Arr::get($user_hash, 'name');
+		$username = Input::post('username') ?: Arr::get($user_hash, 'nickname');
+		$email = Input::post('email') ?: Arr::get($user_hash, 'email');
+		$password = Input::post('password');
 		
 		if ($username and $full_name and $email and $password)
 		{
@@ -72,7 +77,7 @@ class Controller extends \Controller
 					'created_at' => time(),
 				))->save();
 
-				\Response::redirect(\Config::get('ninjauth.urls.registered'));
+				Response::redirect(Config::get('ninjauth.urls.registered'));
 			}
 		}
 		
