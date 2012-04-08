@@ -19,6 +19,10 @@ use Response;
 
 class Controller extends \Controller
 {
+	public static $linked_redirect = '/auth/linked';
+	public static $login_redirect = '/';
+	public static $registered_redirect = '/';
+
 	public function before()
 	{
 		parent::before();
@@ -37,8 +41,27 @@ class Controller extends \Controller
 	public function action_callback($provider)
 	{
 		// Whatever happens, we're sending somebody somewhere
-		$url = Strategy::forge($provider)->login_or_register();
+		$status = Strategy::forge($provider)->login_or_register();
 		
+		// Stuff should go with each type of response
+		switch ($status)
+		{
+			case 'linked':
+				$message = 'You have linked '.$provider.' to your account.';
+				$url = static::$linked_redirect;
+			break;
+
+			case 'logged_in':
+				$message = 'You have logged in.';
+				$url = static::$login_redirect;
+			break;
+
+			case 'registered':
+				$message = 'You have logged in with your new account.';
+				$url = static::$registered_redirect;
+			break;
+		}
+
 		Response::redirect($url);
 	}
 

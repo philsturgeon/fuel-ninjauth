@@ -132,7 +132,7 @@ abstract class Strategy
 				))->save();
 
 				// Attachment went ok so we'll redirect
-				return Config::get('ninjauth.urls.logged_in');
+				return 'linked';
 			}
 			
 			else
@@ -143,16 +143,16 @@ abstract class Strategy
 		}
 		
 		// The user exists, so send him on his merry way as a user
-		else if (($authentication = Model_Authentication::find_by_uid($user_hash['uid'])))
+		else if (($authentication = Model_Authentication::find_by_uid($user_hash['uid'])) > 0)
 		{
 			// Force a login with this username
 			if ($this->adapter->force_login((int) $authentication->user_id))
 			{
-				Session::set_flash('You have been logged in.');
-
 			    // credentials ok, go right in
-			    return Config::get('ninjauth.urls.logged_in');
+			    return 'logged_in';
 			}
+
+			throw new Exception('Force login failed');
 		}
 		
 		// Not an existing user of any type, so we need to create a user somehow
@@ -180,7 +180,7 @@ abstract class Strategy
 				if ($saved and $this->adapter->force_login($user_id))
 				{
 				    // credentials ok, go right in
-				    return Config::get('ninjauth.urls.registered');
+				    return 'registered';
 				}
 
 				exit('We tried automatically creating a user but that just really did not work. Not sure why...');
@@ -201,7 +201,7 @@ abstract class Strategy
 					),
 				));
 
-				return Config::get('ninjauth.urls.registration');
+				return 'register';
 			}
 		}
 	}
