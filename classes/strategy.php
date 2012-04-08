@@ -177,7 +177,7 @@ abstract class Strategy
 				))->save();
 
 				// Force a login with this users id
-				if ($saved and $this->adapter->force_login($user_id))
+				if ($saved and $this->adapter->force_login((int) $user_id))
 				{
 				    // credentials ok, go right in
 				    return 'registered';

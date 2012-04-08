@@ -2,8 +2,8 @@
 
 namespace NinjAuth;
 
-class Strategy_OAuth2 extends Strategy {
-	
+class Strategy_OAuth2 extends Strategy
+{	
 	public $provider;
 	
 	public function authenticate()
