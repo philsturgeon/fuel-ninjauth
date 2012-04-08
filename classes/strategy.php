@@ -114,7 +114,7 @@ abstract class Strategy
 		{
 			$user_id = $this->adapter->get_user_id();
 
-			$num_linked = count(Model_Authentication::find_by_user_id($user_id));
+			$num_linked = count(Model_Authentication::find_one_by_user_id($user_id));
 		
 			// Allowed multiple providers, or not authed yet?
 			if ($num_linked === 0 or Config::get('ninjauth.link_multiple_providers') === true)
@@ -137,13 +137,13 @@ abstract class Strategy
 			
 			else
 			{
-				$auth = Model_Authentication::find_by_user_id($user_id);
+				$auth = Model_Authentication::find_one_by_user_id($user_id);
 				throw new Exception(sprintf('This user is already linked to "%s".', $auth->provider));
 			}
 		}
 		
 		// The user exists, so send him on his merry way as a user
-		else if (($authentication = Model_Authentication::find_by_uid($user_hash['uid'])) > 0)
+		elseif (($authentication = Model_Authentication::find_one_by_uid($user_hash['uid'])))
 		{
 			// Force a login with this username
 			if ($this->adapter->force_login((int) $authentication->user_id))
