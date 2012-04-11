@@ -41,7 +41,14 @@ class Strategy_OpenId extends Strategy
 		$this->openid->identity = $identity;
 		$this->openid->required = \Config::get('ninjauth.providers.openid.ax_required');
 		$this->openid->optional = \Config::get('ninjauth.providers.openid.ax_optional');
-		$this->openid->returnUrl = \Uri::create(\Config::get('ninjauth.urls.callback', \Request::active()->route->segments[0].'/callback').'/'.$this->provider);
+
+		if ( ! ($callback = \Config::get('ninjauth.providers.openid.callback')))
+		{
+			// Turn /whatever/controller/session/facebook into /whatever/controller/callback/facebook
+			$callback = \Uri::create(str_replace('/session/', '/callback/', \Request::active()->route->path));
+		}
+
+		$this->openid->returnUrl = $callback;
 
 		try
 		{

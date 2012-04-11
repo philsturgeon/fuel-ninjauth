@@ -21,6 +21,7 @@ class Controller extends \Controller
 {
 	public static $linked_redirect = '/auth/linked';
 	public static $login_redirect = '/';
+	public static $register_redirect = '/auth/register';
 	public static $registered_redirect = '/';
 
 	public function before()
@@ -42,7 +43,7 @@ class Controller extends \Controller
 	{
 		// Whatever happens, we're sending somebody somewhere
 		$status = Strategy::forge($provider)->login_or_register();
-		
+
 		// Stuff should go with each type of response
 		switch ($status)
 		{
@@ -60,6 +61,14 @@ class Controller extends \Controller
 				$message = 'You have logged in with your new account.';
 				$url = static::$registered_redirect;
 			break;
+
+			case 'register':
+				$message = 'Please fill in any missing details and add a password.';
+				$url = static::$register_redirect;
+			break;
+
+			default:
+				throw new Exception('Strategy::login_or_register() has come up with a result that we dont know how to handle.');
 		}
 
 		Response::redirect($url);

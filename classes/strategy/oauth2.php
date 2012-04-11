@@ -14,7 +14,8 @@ class Strategy_OAuth2 extends Strategy
 		// Grab a callback from the config
 		if ($provider->callback === null)
 		{
-			$provider->callback = \Uri::create(\Input::get('callback', \Request::active()->route->segments[0].'/callback').'/'.$this->provider);
+			// Turn /whatever/controller/session/facebook into /whatever/controller/callback/facebook
+			$provider->callback = \Uri::create(str_replace('/session/', '/callback/', \Request::active()->route->path));
 		}
 		
 		return $provider->authorize(array(

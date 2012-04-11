@@ -14,9 +14,12 @@ class Strategy_OAuth extends Strategy {
 		// Load the provider
 		$provider = \OAuth\Provider::forge($this->provider);
 		
-		// Create the URL to return the user to
-		$callback = \Arr::get($this->config, 'callback') ?: \Uri::create(\Request::active()->route->segments[0].'/callback/'.$this->provider);
-		
+		if ( ! $callback = \Arr::get($this->config, 'callback'))
+		{
+			// Turn /whatever/controller/session/facebook into /whatever/controller/callback/facebook
+			$callback = \Uri::create(str_replace('/session/', '/callback/', \Request::active()->route->path));
+		}
+
 		// Add the callback URL to the consumer
 		$consumer->callback($callback);	
 
@@ -40,7 +43,7 @@ class Strategy_OAuth extends Strategy {
 		// Load the provider
 		$this->provider = \OAuth\Provider::forge($this->provider);
 		
-		if (($token = \Cookie::get('oauth_token')))
+		if ($token = \Cookie::get('oauth_token'))
 		{
 			// Get the token from storage
 			$this->token = unserialize(base64_decode($token));
@@ -48,12 +51,13 @@ class Strategy_OAuth extends Strategy {
 			
 		if ($this->token AND $this->token->access_token !== \Input::get_post('oauth_token'))
 		{
-			//\Cookie::delete('oauth_token');
+			// Delete the token, it is not valid
+			\Cookie::delete('oauth_token');
 
 			// Send the user back to the beginning
 			exit('invalid token after coming back to site');
 		}
-		
+
 		// Get the verifier
 		$verifier = \Input::get_post('oauth_verifier');
 
