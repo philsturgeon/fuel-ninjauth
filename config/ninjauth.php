@@ -5,6 +5,13 @@
 return array(
 
 	/**
+	 * Adapter
+	 * 
+	 * NinjAuth can use different adapters, so it will work with 'auth' or 'sentry'.
+	 */
+	'adapter' => 'auth',
+
+	/**
 	 * Providers
 	 * 
 	 * Providers such as Facebook, Twitter, etc all use different Strategies such as oAuth, oAuth2, etc.
