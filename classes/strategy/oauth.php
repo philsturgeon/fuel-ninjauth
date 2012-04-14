@@ -14,9 +14,12 @@ class Strategy_OAuth extends Strategy {
 		// Load the provider
 		$provider = \OAuth\Provider::forge($this->provider);
 		
-		// Create the URL to return the user to
-		$callback = \Arr::get($this->config, 'callback') ?: \Uri::create(\Config::get('ninjauth.urls.callback', \Request::active()->route->segments[0].'/callback').'/'.$this->provider);
-		
+		if ( ! $callback = \Arr::get($this->config, 'callback'))
+		{
+			// Turn /whatever/controller/session/facebook into /whatever/controller/callback/facebook
+			$callback = \Uri::create(str_replace('/session/', '/callback/', \Request::active()->route->path));
+		}
+
 		// Add the callback URL to the consumer
 		$consumer->callback($callback);	
 
@@ -26,10 +29,9 @@ class Strategy_OAuth extends Strategy {
 		// Store the token
 		\Cookie::set('oauth_token', base64_encode(serialize($token)));
 
-		// Redirect to the twitter login page
-		\Response::redirect($provider->authorize_url($token, array(
+		return $provider->authorize_url($token, array(
 			'oauth_callback' => $callback,
-		)));
+		));
 	}
 	
 	

@@ -2,8 +2,8 @@
 
 namespace NinjAuth;
 
-class Strategy_OAuth2 extends Strategy {
-	
+class Strategy_OAuth2 extends Strategy
+{	
 	public $provider;
 	
 	public function authenticate()
@@ -14,10 +14,11 @@ class Strategy_OAuth2 extends Strategy {
 		// Grab a callback from the config
 		if ($provider->callback === null)
 		{
-			$provider->callback = \Uri::create(\Config::get('ninjauth.urls.callback', \Request::active()->route->segments[0].'/callback').'/'.$this->provider);
+			// Turn /whatever/controller/session/facebook into /whatever/controller/callback/facebook
+			$provider->callback = \Uri::create(str_replace('/session/', '/callback/', \Request::active()->route->path));
 		}
 		
-		$provider->authorize(array(
+		return $provider->authorize(array(
 			'redirect_uri' => $provider->callback
 		));
 	}

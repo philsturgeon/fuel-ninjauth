@@ -3,15 +3,13 @@
  * Configuration for NinjAuth
  */
 return array(
-	
-	'urls' => array(
-		'registration' => 'auth/register',
-		'login' => 'auth/login',
-		'callback' => 'auth/callback',
-		
-		'registered' => 'auth/account',
-		'logged_in' => 'auth/account',
-	),
+
+	/**
+	 * Adapter
+	 * 
+	 * NinjAuth can use different adapters, so it will work with 'auth' or 'sentry'.
+	 */
+	'adapter' => 'auth',
 
 	/**
 	 * Providers
@@ -24,7 +22,7 @@ return array(
 		'facebook' => array(
 			'id' => '',
 			'secret' => '',
-			'scope' => 'email,offline_access',
+			'scope' => array('email', 'offline_access'),
 		),
 		
 		'twitter' => array(
