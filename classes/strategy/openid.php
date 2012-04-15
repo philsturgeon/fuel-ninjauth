@@ -32,6 +32,8 @@ class Strategy_OpenId extends Strategy
 	 */
 	public function authenticate()
 	{
+		$this->provider = $this;
+
 		$identity = \Input::post(\Config::get('ninjauth.providers.openid.identifier_form_name'));
 		if (empty($identity))
 		{
@@ -67,6 +69,8 @@ class Strategy_OpenId extends Strategy
 	 */
 	public function callback()
 	{
+		$this->provider = $this;
+
 		if ($this->openid->mode == 'cancel')
 		{
 			throw new CancelException('User canceled the process');
