@@ -6,6 +6,7 @@ use Arr;
 use Config;
 use Input;
 use Response;
+use Session;
 
 /**
  * NinjAuth Controller
@@ -109,7 +110,7 @@ class Controller extends \Controller
 					'created_at' => time(),
 				))->save();
 
-				Response::redirect(Config::get('ninjauth.urls.registered'));
+				Response::redirect(static::$registered_redirect);
 			}
 		}
 		
