@@ -32,6 +32,8 @@ class Strategy_OpenId extends Strategy
 	 */
 	public function authenticate()
 	{
+		$this->provider = $this;
+
 		$identity = \Input::post(\Config::get('ninjauth.providers.openid.identifier_form_name'));
 		if (empty($identity))
 		{
@@ -67,6 +69,8 @@ class Strategy_OpenId extends Strategy
 	 */
 	public function callback()
 	{
+		$this->provider = $this;
+
 		if ($this->openid->mode == 'cancel')
 		{
 			throw new CancelException('User canceled the process');
@@ -101,10 +105,12 @@ class Strategy_OpenId extends Strategy
 		$r = '';
 		if (is_array($map))
 		{
+			$r = array();
 			foreach ($map as $m)
 			{
-				$r .= $this->get_data($m, $data);
+				$r[] = $this->get_data($m, $data);
 			}
+			$r = implode(' ', $r);
 		}
 		else if (array_key_exists($map, $data))
 		{
@@ -122,7 +128,7 @@ class Strategy_OpenId extends Strategy
 		$ret['uid'] = $this->openid->identity;
 
 		$data = $this->openid->getAttributes();
-		
+
 		foreach (static::$mapping as $name => $map)
 		{
 			$ret[$name] = $this->get_data($map, $data);

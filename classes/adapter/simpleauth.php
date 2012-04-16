@@ -19,7 +19,7 @@ class Adapter_SimpleAuth extends Adapter
 
 	public function force_login($user_id)
 	{
-		return Auth::instance()->force_login($authentication->user_id);
+		return Auth::instance()->force_login($user_id);
 	}
 
 	public function create_user(array $user)
@@ -34,11 +34,11 @@ class Adapter_SimpleAuth extends Adapter
 				// Password (random string will do if none provided)
 				isset($user['password']) ? $user['password'] : \Str::random(),
 
-				// Email address 
-				isset($user['username']) ? $user['username'] : null,
+				// Email address
+				isset($user['email']) ? $user['email'] : null,
 
 				// Which group are they?
-				\Config::get('ninjauth.default_group'), 
+				\Config::get('ninjauth.default_group'),
 
 				// Extra information
 				array(
@@ -49,7 +49,7 @@ class Adapter_SimpleAuth extends Adapter
 					),
 				)
 			);
-			
+
 		    return $user_id ?: false;
 		}
 		catch (SimpleUserUpdateException $e)
@@ -58,5 +58,11 @@ class Adapter_SimpleAuth extends Adapter
 		}
 
 		return false;
+	}
+
+	public function can_auto_login(array $user)
+	{
+		// To automatically register with simpleauth you need an username or email and password
+		return (isset($user['username']) || isset($user['email'])) && isset($user['password']);
 	}
 }
