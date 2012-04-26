@@ -32,15 +32,15 @@ class Adapter_Warden extends Adapter
 		try
 		{
 			$new_user = Model_User::forge(array(
-		    	'username' => isset($user['username']) ? $user['username'] : '',
-		    	'email'    => isset($user['email']) ? $user['email'] : '',
-		    	'password' => isset($user['password']) ? $user['password'] : Str::random(),
+				'username' => isset($user['username']) ? $user['username'] : '',
+				'email'    => isset($user['email']) ? $user['email'] : '',
+				'password' => isset($user['password']) ? $user['password'] : Str::random()
 			));
 			
 			if (Config::get('warden.profilable') === true) {
 				$new_user->profile = Model_Profile::forge(array(
 					'first_name' => isset($user['first_name']) ? $user['first_name'] : '',
-		    		'last_name'  => isset($user['last_name']) ? $user['last_name'] : '',
+					'last_name'  => isset($user['last_name']) ? $user['last_name'] : ''
 				));
 			}
 			
