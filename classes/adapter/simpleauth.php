@@ -4,7 +4,7 @@ namespace NinjAuth;
 
 use Auth;
 
-class Adapter_Sentry extends Adapter
+class Adapter_SimpleAuth extends Adapter
 {
 	public function is_logged_in()
 	{
