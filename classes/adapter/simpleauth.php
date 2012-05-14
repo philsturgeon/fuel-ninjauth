@@ -35,7 +35,7 @@ class Adapter_SimpleAuth extends Adapter
 				isset($user['password']) ? $user['password'] : \Str::random(),
 
 				// Email address 
-				isset($user['username']) ? $user['username'] : null,
+				isset($user['email']) ? $user['email'] : null,
 
 				// Which group are they?
 				\Config::get('ninjauth.default_group'), 
