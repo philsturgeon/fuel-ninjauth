@@ -42,37 +42,45 @@ class Controller extends \Controller
 
 	public function action_callback($provider)
 	{
-		// Whatever happens, we're sending somebody somewhere
-		$status = Strategy::forge($provider)->login_or_register();
-
-		// Stuff should go with each type of response
-		switch ($status)
+		try
 		{
-			case 'linked':
-				$message = 'You have linked '.$provider.' to your account.';
-				$url = static::$linked_redirect;
-			break;
+			// Whatever happens, we're sending somebody somewhere
+			$status = Strategy::forge($provider)->login_or_register();
 
-			case 'logged_in':
-				$message = 'You have logged in.';
-				$url = static::$login_redirect;
-			break;
+			// Stuff should go with each type of response
+			switch ($status)
+			{
+				case 'linked':
+					$message = 'You have linked '.$provider.' to your account.';
+					$url = static::$linked_redirect;
+				break;
 
-			case 'registered':
-				$message = 'You have logged in with your new account.';
-				$url = static::$registered_redirect;
-			break;
+				case 'logged_in':
+					$message = 'You have logged in.';
+					$url = static::$login_redirect;
+				break;
 
-			case 'register':
-				$message = 'Please fill in any missing details and add a password.';
-				$url = static::$register_redirect;
-			break;
+				case 'registered':
+					$message = 'You have logged in with your new account.';
+					$url = static::$registered_redirect;
+				break;
 
-			default:
-				throw new Exception('Strategy::login_or_register() has come up with a result that we dont know how to handle.');
+				case 'register':
+					$message = 'Please fill in any missing details and add a password.';
+					$url = static::$register_redirect;
+				break;
+
+				default:
+					exit('Strategy::login_or_register() has come up with a result that we dont know how to handle.');
+			}
+
+			Response::redirect($url);
 		}
 
-		Response::redirect($url);
+		catch (AuthException $e)
+		{
+			exit($e->getMessage());
+		}
 	}
 
 	public function action_register()
