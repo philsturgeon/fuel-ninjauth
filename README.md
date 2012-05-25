@@ -1,10 +1,10 @@
 # NinjAuth
 
-Use the Auth, OAuth and OAuth2 packages to authenticate users with an array of third-party services in a totally integrated and abstracted fashion.
+Use the OAuth and OAuth2 packages to authenticate users with an array of third-party services in a totally integrated and abstracted fashion. Users can currently be managed by SimpleAuth or Sentry.
 
 Implementation requires only one controller and one database table (two if you count users).
 
-NinjAuth comes from the company behind the project: [HappyNinjas](http://happyninjas.com/).
+The name "NinjAuth" comes from the company behind the project: [HappyNinjas](http://happyninjas.com/).
 
 ## Supported Strategies
 
@@ -20,7 +20,7 @@ NinjAuth comes from the company behind the project: [HappyNinjas](http://happyni
 ## Installation
 
     # Create users if this table does not exist already
-    $ oil g migration create_users username:varchar[50] password:string group:int email:string last_login:integer login_hash:string profile_fields:text
+    $ oil g migration create_users username:varchar[50] password:string group:int email:string last_login:integer login_hash:string profile_fields:text created_at:int
     $ oil refine migrate
 	
 	# Run migrations in the package to create "authentications" table
