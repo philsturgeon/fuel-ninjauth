@@ -7,6 +7,7 @@ use Config;
 use Input;
 use Response;
 use Session;
+use View;
 
 /**
  * NinjAuth Controller
@@ -122,7 +123,7 @@ class Controller extends \Controller
 			}
 		}
 		
-		$this->response->body = \View::forge('register', array(
+		return View::forge('register', array(
 			'user' => (object) compact('username', 'full_name', 'email', 'password')
 		));
 	}
