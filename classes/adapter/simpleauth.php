@@ -35,7 +35,7 @@ class Adapter_SimpleAuth extends Adapter
 				isset($user['password']) ? $user['password'] : \Str::random(),
 
 				// Email address 
-				isset($user['username']) ? $user['username'] : null,
+				isset($user['email']) ? $user['email'] : null,
 
 				// Which group are they?
 				\Config::get('ninjauth.default_group'), 
@@ -58,5 +58,11 @@ class Adapter_SimpleAuth extends Adapter
 		}
 
 		return false;
+	}
+
+	public function can_auto_login(array $user)
+	{
+		// To automatically register with SimpleAuth you only need one or the other
+		return isset($user['username']) and isset($user['email']) and isset($user['password']);
 	}
 }

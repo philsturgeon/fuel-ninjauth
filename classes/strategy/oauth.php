@@ -2,6 +2,12 @@
 
 namespace NinjAuth;
 
+use Arr;
+use Cookie;
+use Uri;
+use Input;
+use Request;
+
 class Strategy_OAuth extends Strategy {
 	
 	public $provider;
@@ -14,10 +20,10 @@ class Strategy_OAuth extends Strategy {
 		// Load the provider
 		$provider = \OAuth\Provider::forge($this->provider);
 		
-		if ( ! $callback = \Arr::get($this->config, 'callback'))
+		if ( ! $callback = Arr::get($this->config, 'callback'))
 		{
 			// Turn /whatever/controller/session/facebook into /whatever/controller/callback/facebook
-			$callback = \Uri::create(str_replace('/session/', '/callback/', \Request::active()->route->path));
+			$callback = Uri::create(str_replace('/session/', '/callback/', Request::active()->route->path));
 		}
 
 		// Add the callback URL to the consumer
@@ -27,7 +33,7 @@ class Strategy_OAuth extends Strategy {
 		$token = $provider->request_token($consumer);
 
 		// Store the token
-		\Cookie::set('oauth_token', base64_encode(serialize($token)));
+		Cookie::set('oauth_token', base64_encode(serialize($token)));
 
 		return $provider->authorize_url($token, array(
 			'oauth_callback' => $callback,
@@ -43,23 +49,23 @@ class Strategy_OAuth extends Strategy {
 		// Load the provider
 		$this->provider = \OAuth\Provider::forge($this->provider);
 		
-		if ($token = \Cookie::get('oauth_token'))
+		if (($token = Cookie::get('oauth_token')))
 		{
 			// Get the token from storage
 			$this->token = unserialize(base64_decode($token));
 		}
 			
-		if ($this->token AND $this->token->access_token !== \Input::get_post('oauth_token'))
+		if ($this->token AND $this->token->access_token !== Input::param('oauth_token'))
 		{
 			// Delete the token, it is not valid
-			\Cookie::delete('oauth_token');
+			Cookie::delete('oauth_token');
 
 			// Send the user back to the beginning
 			exit('invalid token after coming back to site');
 		}
 
 		// Get the verifier
-		$verifier = \Input::get_post('oauth_verifier');
+		$verifier = Input::param('oauth_verifier');
 
 		// Store the verifier in the token
 		$this->token->verifier($verifier);

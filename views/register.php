@@ -1,7 +1,7 @@
 <?php echo Form::open(null, array('id' => 'register')); ?>
 
-	<?php if (Session::get_flash('ninjauth.error')): ?>
-		<span class="error"><?php echo Session::get_flash('ninjauth.error'); ?></span>
+	<?php if (isset($error)): ?>
+		<span class="error"><?php echo $error; ?></span>
 	<?php endif; ?>
 
 	<p>

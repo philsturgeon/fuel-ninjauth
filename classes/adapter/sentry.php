@@ -39,9 +39,9 @@ class Adapter_Sentry extends Adapter
 
 		    return $user_id ?: false;
 		}
-		catch (SentryUserException $e)
+		catch (Sentry\SentryUserException $e)
 		{
-		    Session::set_flash('ninjauth.error', $e->getMessage());
+		    throw new AuthException($e->getMessage());
 		}
 
 		return false;

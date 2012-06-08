@@ -2,6 +2,8 @@
 
 namespace NinjAuth;
 
+class AuthException extends \FuelException {}
+
 /**
  * NinjAuth Adapter
  * 
