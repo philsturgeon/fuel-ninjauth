@@ -19,7 +19,7 @@ class Adapter_SimpleAuth extends Adapter
 
 	public function force_login($user_id)
 	{
-		return Auth::instance()->force_login($authentication->user_id);
+		return Auth::instance()->force_login($user_id);
 	}
 
 	public function create_user(array $user)
