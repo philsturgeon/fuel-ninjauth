@@ -84,7 +84,7 @@ abstract class Strategy
 	public function login_or_register()
 	{
 		$token = $this->callback();
-		
+
 		switch ($this->name)
 		{
 		 	case 'oauth':

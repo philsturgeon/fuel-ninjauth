@@ -77,6 +77,17 @@ class Controller extends \Controller
 			Response::redirect($url);
 		}
 
+		catch (CancelException $e)
+		{
+			$url = Strategy::forge($provider)->authenticate();
+			exit('It looks like you canceled your authorisation. <a href="'.$url.'">Click here</a> to try again.');
+		}
+
+		catch (ResponseException $e)
+		{
+			exit($e->getMessage());
+		}
+
 		catch (AuthException $e)
 		{
 			exit($e->getMessage());
