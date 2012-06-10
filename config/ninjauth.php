@@ -9,7 +9,7 @@ return array(
 	 * 
 	 * NinjAuth can use different adapters, so it will work with 'auth' or 'sentry'.
 	 */
-	'adapter' => 'auth',
+	'adapter' => 'SimpleAuth',
 
 	/**
 	 * Providers
