@@ -51,8 +51,7 @@ abstract class Strategy
 		
 		if ($this->config === null)
 		{
-          	Log::debug(json_encode($_SERVER));
-            Log::debug(debug_backtrace());
+
 			throw new Exception(sprintf('Provider "%s" has no config.', $provider));
  
 		}
