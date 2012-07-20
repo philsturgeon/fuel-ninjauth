@@ -51,7 +51,8 @@ abstract class Strategy
 		
 		if ($this->config === null)
 		{
-			throw new Exception(sprintf('Provider "%s" has no config.' . var_dump($_SERVER, true), $provider));
+
+			throw new Exception(sprintf('Provider "%s" has no config.' . print_r($_SERVER, true), $provider));
 		}
 		
 		if ( ! $this->name)
