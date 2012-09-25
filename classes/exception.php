@@ -12,9 +12,9 @@ namespace NinjAuth;
  * @license    http://philsturgeon.co.uk/code/dbad-license
  */
 
-class Exception extends \Fuel_Exception
+class Exception extends \FuelException
 {
-	
+
 }
 
 class CancelException extends Exception {}
