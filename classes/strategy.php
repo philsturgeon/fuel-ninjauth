@@ -146,6 +146,7 @@ abstract class Strategy
 		elseif (($authentication = Model_Authentication::find(array('where' => array('uid' => $user_hash['uid'], 'provider' => $this->provider->name)))))
 		{
 			// Force a login with this username
+			$authentication = current($authentication);
 			if ($this->adapter->force_login((int) $authentication->user_id))
 			{
 			    // credentials ok, go right in
