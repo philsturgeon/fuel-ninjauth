@@ -39,7 +39,29 @@ Just the usual submodule update, and when you're done run:
 http://example.com/auth/session/facebook
 
 ```php
-class Controller_Auth extends \NinjAuth\Controller {}
+class Controller_Auth extends \NinjAuth\Controller {
+	public static $linked_redirect = '/auth/linked';
+	public static $login_redirect = '/';
+	public static $register_redirect = '/auth/register';
+	public static $registered_redirect = '/auth/registered';
+
+	/*
+	*	Example registered action for SimpleAuth (Should work with others)
+	*
+	*/
+	public function action_registered(){
+
+		$auth = Auth::instance();
+		$user_id = Session::get_flash('ninjauth.user_id');
+
+		if(isset($user_id)){
+			Auth::instance()->force_login($user_id);
+			return Response::redirect('/dashboard');
+		}
+
+		return $this->response;
+	}
+}
 ```
 
 ### Configuration
@@ -62,3 +84,10 @@ class Controller_Auth extends \NinjAuth\Controller {}
 		// Google supports OAuth and OAuth2. Pick a specific
 		'strategy' => 'OAuth',
 	),
+
+### Service authentication setup links
+
+- [Google](https://code.google.com/apis/console#access)
+- [Twitter](https://dev.twitter.com/)
+- [Facebook](https://developer.facebook.com/)
+
