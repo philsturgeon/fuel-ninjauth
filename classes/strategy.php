@@ -22,7 +22,7 @@ abstract class Strategy
 	 * @var  string  Strategy name
 	 */
 	public $name;
-	
+
 	protected static $providers = array(
 		'blooie' 		=> 'OAuth2',
 		'dropbox' 		=> 'OAuth',
@@ -38,29 +38,29 @@ abstract class Strategy
 		'twitter' 		=> 'OAuth',
 		'windowslive' 	=> 'OAuth2',
 	);
-	
+
 	public function __construct($provider)
 	{
 		$this->provider = $provider;
-		
+
 		// Take config from the ninjauth.php
 		$this->config = Config::get("ninjauth.providers.{$provider}");
 
 		// Adapters interact with user systems and whatnot
 		$this->adapter = Adapter::forge(Config::get('ninjauth.adapter'));
-		
+
 		if ($this->config === null)
 		{
 			throw new Exception(sprintf('Provider "%s" has no config.', $provider));
 		}
-		
+
 		if ( ! $this->name)
 		{
 			// Attempt to guess the name from the class name
 			$this->name = strtolower(str_replace('NinjAuth\Strategy_', '', get_class($this)));
 		}
 	}
-	
+
 	public static function forge($provider)
 	{
 		// If a strategy has been specified use it, otherwise look it up
@@ -75,12 +75,12 @@ abstract class Strategy
 				throw new Exception(sprintf('Provider "%s" has no strategy.', $provider));
 			}
 		}
-		
+
 		$class = "NinjAuth\\Strategy_{$strategy}";
-		
+
 		return new $class($provider);
 	}
-	
+
 	public function login_or_register()
 	{
 		$token = $this->callback();
@@ -102,7 +102,7 @@ abstract class Strategy
 			default:
 				throw new Exception("Unsupported Strategy: {$this->name}");
 		}
-		
+
 		// If there is no uid we don't know who this is
 		if (empty($user_hash['uid']))
 		{
@@ -115,7 +115,7 @@ abstract class Strategy
 			$user_id = $this->adapter->get_user_id();
 
 			$num_linked = count(Model_Authentication::find_one_by_user_id($user_id));
-		
+
 			// Allowed multiple providers, or not authed yet?
 			if ($num_linked === 0 or Config::get('ninjauth.link_multiple_providers') === true)
 			{
@@ -134,18 +134,19 @@ abstract class Strategy
 				// Attachment went ok so we'll redirect
 				return 'linked';
 			}
-			
+
 			else
 			{
 				$auth = Model_Authentication::find_one_by_user_id($user_id);
 				throw new AuthException(sprintf('This user is already linked to "%s".', $auth->provider));
 			}
 		}
-		
+
 		// The user exists, so send him on his merry way as a user
-		elseif (($authentication = Model_Authentication::find_one_by_uid($user_hash['uid'])))
+		elseif (($authentication = Model_Authentication::find(array('where' => array('uid' => $user_hash['uid'], 'provider' => $this->provider->name)))))
 		{
 			// Force a login with this username
+			$authentication = current($authentication);
 			if ($this->adapter->force_login((int) $authentication->user_id))
 			{
 			    // credentials ok, go right in
@@ -154,7 +155,7 @@ abstract class Strategy
 
 			throw new AuthException('This user could not be logged in.');
 		}
-		
+
 		// Not an existing user of any type, so we need to create a user somehow
 		else
 		{
