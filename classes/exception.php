@@ -14,7 +14,7 @@ namespace NinjAuth;
 
 class Exception extends \FuelException
 {
-	
+
 }
 
 class CancelException extends Exception {}
