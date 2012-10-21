@@ -28,7 +28,7 @@ class Adapter_Sentry extends Adapter
 		try
 		{
 		    $user_id = Sentry::user()->create(array(
-		    	'username' => isset($user['username']) ? $user['username'] : '',
+		    	'username' => isset($user['username']) ? $user['username'] : null,
 		    	'email'    => isset($user['email']) ? $user['email'] : '',
 		    	'password' => isset($user['password']) ? $user['password'] : Str::random(),
 		    	'metadata' => array(
