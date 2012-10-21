@@ -52,6 +52,7 @@ abstract class Strategy
 		if ($this->config === null)
 		{
 			throw new Exception(sprintf('Provider "%s" has no config.', $provider));
+ 
 		}
 
 		if ( ! $this->name)
