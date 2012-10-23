@@ -26,6 +26,9 @@ The name "NinjAuth" comes from the company behind the project: [HappyNinjas](htt
 	# Run migrations in the package to create "authentications" table
 	$ oil refine migrate --packages=ninjauth
 	
+-NOTE: For Fuel v1.3+, add or uncomment the PKGPATH to the 'package_paths' variable in fuel/app/config/config.php
+
+
 ## Upgrade
 
 Just the usual submodule update, and when you're done run:
