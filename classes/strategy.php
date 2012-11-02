@@ -148,6 +148,15 @@ abstract class Strategy
 		{
 			// Force a login with this username
 			$authentication = current($authentication);
+
+			// Access token and secret may have been revoked or expired, update them if they are different.
+			if($authentication->access_token !== $token->access_token and $authentication->secret !== $token->secret)
+			{
+				$authentication->access_token = $token->access_token;
+				$authentication->secret = $token->secret;
+				$authentication->save();
+			}
+            
 			if ($this->adapter->force_login((int) $authentication->user_id))
 			{
 			    // credentials ok, go right in
