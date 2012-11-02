@@ -61,7 +61,7 @@ class Strategy_OAuth extends Strategy {
 			Cookie::delete('oauth_token');
 
 			// Send the user back to the beginning
-			exit('invalid token after coming back to site');
+			throw new CancelException('The resource owner or authorization server denied the request.');
 		}
 
 		// Get the verifier
