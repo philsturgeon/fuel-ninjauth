@@ -113,12 +113,19 @@ abstract class Strategy
 		// UID and logged in? Just attach this authentication to a user
 		if ($this->adapter->is_logged_in())
 		{
-			$user_id = $this->adapter->get_user_id();
-
-			$num_linked = count(Model_Authentication::find_one_by_user_id($user_id));
-
+			$user_id	= $this->adapter->get_user_id();
+			$linked		= Model_Authentication::find_one_by_user_id($user_id);
+			
+			$provider_linked = Model_Authentication::find_one_by(array(
+				'user_id'		=> $user_id,
+				'provider'	=> $this->provider->name,
+				'uid'				=> $user_hash['uid']
+			));
+			
+			$allow_multiple = Config::get('ninjauth.link_multiple_providers');
+			
 			// Allowed multiple providers, or not authed yet?
-			if ($num_linked === 0 or Config::get('ninjauth.link_multiple_providers') === true)
+			if (count($linked) === 0 or ($allow_multiple === true and count($provider_linked) === 0))
 			{
 				// Attach this account to the logged in user
 				Model_Authentication::forge(array(
@@ -135,11 +142,14 @@ abstract class Strategy
 				// Attachment went ok so we'll redirect
 				return 'linked';
 			}
-
+			// try to login with the current provider
+			elseif (count($linked) > 0 and $allow_multiple === true and count($provider_linked) > 0 and $this->adapter->force_login((int) $user_id))
+			{
+			 	return 'logged_in';
+			}
 			else
 			{
-				$auth = Model_Authentication::find_one_by_user_id($user_id);
-				throw new AuthException(sprintf('This user is already linked to "%s".', $auth->provider));
+				throw new AuthException(sprintf('This user is already linked to "%s".', $linked->provider));
 			}
 		}
 
